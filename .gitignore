@@ -1,7 +1,10 @@
 # --- Secrets & état local (NE JAMAIS commiter) ---
 .env
 state.json
+state.json.bak
+last_run.txt
 *.log
+*.log.*
 
 # --- Captures réseau (peuvent contenir des cookies de session) ---
 *.har

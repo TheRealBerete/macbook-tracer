@@ -14,7 +14,7 @@ baisses significatives et envoie une alerte **Telegram**. Budget cible : 2 000 $
 | 1 | Client API + modèles de contrat + tests | ✅ fait |
 | 2 | Config `.env` / `targets.json` + détection + anti-spam + `state.json` | ✅ fait |
 | 3 | Alertes Telegram | ✅ fait |
-| 4 | Ordonnanceur + alerte de panne + logs | à venir |
+| 4 | Ordonnanceur + alerte de panne + logs | ✅ fait |
 | 5 | Déploiement VPS (`systemd`) | à venir |
 | 6 | Module de découverte Open Box | à venir |
 
@@ -58,8 +58,18 @@ python -m bot -v run          # avec logs détaillés
 ```
 
 Le cycle met à jour `state.json` (prix vus, plus bas historique, anti-spam) et envoie
-chaque alerte sur Telegram si `.env` est configuré. L'exécution périodique automatique
-(toutes les 60 min) arrive au Sprint 4.
+chaque alerte sur Telegram si `.env` est configuré.
+
+### Surveillance en continu
+
+```bash
+python -m bot watch      # 1 cycle immédiat, puis toutes les INTERVAL_MINUTES (défaut 60)
+```
+
+- écrit dans `bot.log` (rotation : 5 × 1 Mo)
+- écrit `last_run.txt` après chaque cycle réussi (heartbeat pour un moniteur externe)
+- un cycle qui plante est loggé mais n'arrête pas la boucle
+- s'arrête proprement sur Ctrl+C et sur `SIGTERM` (utilisé par `systemd` — Sprint 5)
 
 ## Tests
 

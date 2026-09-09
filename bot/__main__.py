@@ -7,15 +7,16 @@ Sprint 1 : `python -m bot check <sku> [<sku> ...]`
 from __future__ import annotations
 
 import argparse
-import logging
 import sys
 
 from bot.alerts import Alert, AlertKind
 from bot.bestbuy import BestBuyApiError, BestBuyClient
 from bot.config import Settings, load_targets
 from bot.models import Product
+from bot.logging_setup import setup_logging
 from bot.notify import send_alerts
 from bot.runner import run_once
+from bot.scheduler import watch
 from bot.state import StateStore
 from bot.telegram import TelegramError, TelegramNotifier
 
@@ -196,12 +197,11 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     sub.add_parser("test-telegram", help="envoie un message de test sur Telegram")
+    sub.add_parser("watch", help="exécution périodique (cycle immédiat puis toutes les X min)")
 
     args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.INFO,
-        format="%(levelname)s %(name)s: %(message)s",
-    )
+    # `check` reste léger (console) ; `watch` écrit aussi dans bot.log
+    setup_logging(verbose=args.verbose, to_file=(args.command == "watch"))
 
     if args.command == "check":
         return cmd_check(args.skus, with_detail=args.detail)
@@ -209,6 +209,13 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_run(send=not args.no_send)
     if args.command == "test-telegram":
         return cmd_test_telegram()
+    if args.command == "watch":
+        try:
+            watch()
+        except Exception as exc:  # noqa: BLE001
+            print(f"[WATCH] {exc}", file=sys.stderr)
+            return 1
+        return 0
     return 2
 
 
