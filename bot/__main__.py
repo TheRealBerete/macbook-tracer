@@ -14,8 +14,10 @@ from bot.alerts import Alert, AlertKind
 from bot.bestbuy import BestBuyApiError, BestBuyClient
 from bot.config import Settings, load_targets
 from bot.models import Product
+from bot.notify import send_alerts
 from bot.runner import run_once
 from bot.state import StateStore
+from bot.telegram import TelegramError, TelegramNotifier
 
 # La console Windows est souvent en cp1252 : on force l'UTF-8 pour les accents / emojis.
 for _stream in (sys.stdout, sys.stderr):
@@ -114,7 +116,7 @@ def _format_alert(alert: Alert) -> str:
     return "\n".join(lines)
 
 
-def cmd_run(argv_dry_run: bool) -> int:
+def cmd_run(*, send: bool) -> int:
     try:
         settings = Settings()
         targets = load_targets()
@@ -138,8 +140,38 @@ def cmd_run(argv_dry_run: bool) -> int:
         print(_format_alert(alert))
         print()
 
+    if not send:
+        print("(Envoi Telegram désactivé : --no-send)")
+    elif not settings.telegram_ready:
+        print("(Telegram non configuré dans .env — alertes affichées seulement.)")
+    else:
+        count = send_alerts(alerts, settings)
+        print(f"→ {count}/{len(alerts)} alerte(s) envoyée(s) sur Telegram.")
+    return 0
+
+
+def cmd_test_telegram() -> int:
+    settings = Settings()
     if not settings.telegram_ready:
-        print("(Telegram non configuré — envoi ajouté au Sprint 3.)")
+        print(
+            "[TELEGRAM] TELEGRAM_BOT_TOKEN et TELEGRAM_CHAT_ID doivent être remplis "
+            "dans .env",
+            file=sys.stderr,
+        )
+        return 1
+    try:
+        with TelegramNotifier(
+            settings.telegram_bot_token, settings.telegram_chat_id
+        ) as tg:
+            username = tg.check()
+            tg.send_message(
+                "✅ <b>MacBook Price Watcher</b>\nConfiguration Telegram OK — "
+                "les alertes arriveront ici."
+            )
+    except TelegramError as exc:
+        print(f"[TELEGRAM] {exc}", file=sys.stderr)
+        return 1
+    print(f"Message de test envoyé via @{username}. Vérifie ton Telegram.")
     return 0
 
 
@@ -158,7 +190,12 @@ def main(argv: list[str] | None = None) -> int:
         help="appel supplémentaire par SKU pour récupérer le stock",
     )
 
-    sub.add_parser("run", help="un cycle complet sur la watchlist (targets.json)")
+    run = sub.add_parser("run", help="un cycle complet sur la watchlist (targets.json)")
+    run.add_argument(
+        "--no-send", action="store_true", help="ne pas envoyer sur Telegram (affichage seul)"
+    )
+
+    sub.add_parser("test-telegram", help="envoie un message de test sur Telegram")
 
     args = parser.parse_args(argv)
     logging.basicConfig(
@@ -169,7 +206,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "check":
         return cmd_check(args.skus, with_detail=args.detail)
     if args.command == "run":
-        return cmd_run(args.verbose)
+        return cmd_run(send=not args.no_send)
+    if args.command == "test-telegram":
+        return cmd_test_telegram()
     return 2
 
 

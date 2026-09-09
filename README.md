@@ -13,7 +13,7 @@ baisses significatives et envoie une alerte **Telegram**. Budget cible : 2 000 $
 | 0 | Reconnaissance de l'API Best Buy | ✅ fait |
 | 1 | Client API + modèles de contrat + tests | ✅ fait |
 | 2 | Config `.env` / `targets.json` + détection + anti-spam + `state.json` | ✅ fait |
-| 3 | Alertes Telegram | à venir |
+| 3 | Alertes Telegram | ✅ fait |
 | 4 | Ordonnanceur + alerte de panne + logs | à venir |
 | 5 | Déploiement VPS (`systemd`) | à venir |
 | 6 | Module de découverte Open Box | à venir |
@@ -31,6 +31,15 @@ pip install -r requirements.txt
 cp .env.example .env   # puis remplir les valeurs
 ```
 
+### Configurer Telegram
+
+1. Sur Telegram, parler à **@BotFather** → `/newbot` → récupérer le **token**.
+2. Envoyer un message à ton nouveau bot, puis récupérer ton **chat_id** :
+   parler à **@userinfobot** (il renvoie ton id), ou ouvrir
+   `https://api.telegram.org/bot<TOKEN>/getUpdates` et lire `chat.id`.
+3. Renseigner `TELEGRAM_BOT_TOKEN` et `TELEGRAM_CHAT_ID` dans `.env`.
+4. Vérifier : `python -m bot test-telegram`
+
 ## Utilisation
 
 Interroger l'API pour un ou plusieurs SKU / Web Codes (debug) :
@@ -43,12 +52,14 @@ python -m bot check 20009307 --detail      # + stock (1 appel API de plus par SK
 Lancer un cycle de surveillance complet sur `targets.json` :
 
 ```bash
-python -m bot run          # lit config + watchlist + state.json, affiche les alertes
-python -m bot -v run       # avec logs détaillés
+python -m bot run             # cycle + envoi Telegram des alertes
+python -m bot run --no-send   # cycle sans envoi (affichage console seulement)
+python -m bot -v run          # avec logs détaillés
 ```
 
-Le cycle met à jour `state.json` (prix vus, plus bas historique, anti-spam). L'envoi
-Telegram arrive au Sprint 3 ; pour l'instant les alertes sont affichées en console.
+Le cycle met à jour `state.json` (prix vus, plus bas historique, anti-spam) et envoie
+chaque alerte sur Telegram si `.env` est configuré. L'exécution périodique automatique
+(toutes les 60 min) arrive au Sprint 4.
 
 ## Tests
 
