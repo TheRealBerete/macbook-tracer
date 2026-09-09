@@ -4,6 +4,9 @@ httpx==0.28.1
 # Validation / modèles de contrat pour les réponses API
 pydantic==2.11.9
 
+# Config typée chargée depuis le .env (BaseSettings)
+pydantic-settings==2.11.0
+
 # Chargement du .env en variables d'environnement
 python-dotenv==1.1.1
 

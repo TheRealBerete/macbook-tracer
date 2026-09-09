@@ -12,7 +12,7 @@ baisses significatives et envoie une alerte **Telegram**. Budget cible : 2 000 $
 |--------|---------|--------|
 | 0 | Reconnaissance de l'API Best Buy | ✅ fait |
 | 1 | Client API + modèles de contrat + tests | ✅ fait |
-| 2 | Config `.env` / `targets.json` + détection + anti-spam | à venir |
+| 2 | Config `.env` / `targets.json` + détection + anti-spam + `state.json` | ✅ fait |
 | 3 | Alertes Telegram | à venir |
 | 4 | Ordonnanceur + alerte de panne + logs | à venir |
 | 5 | Déploiement VPS (`systemd`) | à venir |
@@ -31,15 +31,24 @@ pip install -r requirements.txt
 cp .env.example .env   # puis remplir les valeurs
 ```
 
-## Utilisation (Sprint 1)
+## Utilisation
 
-Interroger l'API pour un ou plusieurs SKU / Web Codes :
+Interroger l'API pour un ou plusieurs SKU / Web Codes (debug) :
 
 ```bash
 python -m bot check 20009307 19914759
 python -m bot check 20009307 --detail      # + stock (1 appel API de plus par SKU)
-python -m bot -v check 20009307            # logs détaillés (retries...)
 ```
+
+Lancer un cycle de surveillance complet sur `targets.json` :
+
+```bash
+python -m bot run          # lit config + watchlist + state.json, affiche les alertes
+python -m bot -v run       # avec logs détaillés
+```
+
+Le cycle met à jour `state.json` (prix vus, plus bas historique, anti-spam). L'envoi
+Telegram arrive au Sprint 3 ; pour l'instant les alertes sont affichées en console.
 
 ## Tests
 

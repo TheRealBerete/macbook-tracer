@@ -97,6 +97,24 @@ class Product(_ApiModel):
         return clean_text(self.name)
 
     @property
+    def condition_label(self) -> str:
+        """"Neuf" / "Boîte ouverte" / "Remis à neuf", déduit du nom du produit.
+
+        Sur Best Buy CA, l'état n'a pas de champ dédié fiable dans `catalog/query` :
+        il est encodé dans le libellé ("(Boîte ouverte - Très bon état) MacBook...").
+        """
+        name = self.display_name.lower()
+        if "boîte ouverte" in name or "open box" in name or "open-box" in name:
+            return "Boîte ouverte"
+        if "remis à neuf" in name or "refurbished" in name or "reconditionné" in name:
+            return "Remis à neuf"
+        return "Neuf"
+
+    @property
+    def is_open_box(self) -> bool:
+        return self.condition_label != "Neuf"
+
+    @property
     def full_url(self) -> str:
         """URL absolue (catalog/query renvoie un chemin relatif, product/<sku> l'absolu)."""
         if self.product_url.startswith("http"):
