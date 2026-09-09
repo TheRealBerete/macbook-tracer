@@ -341,12 +341,14 @@ Dernière erreur : HTTP 403 sur /api/offers/v1/...
 
 ## 11. Découpage de développement suggéré
 
-| Sprint | Livrable |
-|--------|----------|
-| 0 | ✅ **Fait** — reco API, endpoints + champs documentés dans `docs/bestbuy-api.md` |
-| 1 | Client API (`catalog/query` + `product/<sku>`) → affiche prix/régulier/stock/vendeur en console |
-| 2 | `.env` + `targets.json` + `state.json` + boucle sur la watchlist + logique F2 / F2b |
-| 3 | Envoi Telegram (F3) + formatage des messages + niveaux visuels |
-| 4 | `APScheduler` (F5) + F2c (alerte de panne) + `bot.log` (F11) |
-| 5 | Déploiement VPS + `systemd` + healthcheck |
-| 6 | Module de découverte Open Box (F10) |
+| Sprint | Livrable | Statut |
+|--------|----------|--------|
+| 0 | Reco API, endpoints + champs documentés dans `docs/bestbuy-api.md` | ✅ fait |
+| 1 | Client API (`catalog/query` + `product/<sku>`) + modèles de contrat + tests | ✅ fait |
+| 2 | `.env` + `targets.json` + `state.json` + watchlist + logique F2 / F2b / F2c | ✅ fait |
+| 3 | Envoi Telegram (F3) + formatage des messages + niveaux visuels | ✅ fait (test live à faire par l'utilisateur) |
+| 4 | `APScheduler` (F5) + `bot.log` (F11) + heartbeat | ✅ fait |
+| 5 | Déploiement VPS + `systemd` + healthcheck | ⏳ artefacts prêts (`deploy/`, `docs/deploy.md`), exécution par l'utilisateur |
+| 6 | Module de découverte Open Box (F10) | ✅ fait |
+
+Code : paquet `bot/`, 57 tests. CLI `python -m bot {check,run,watch,test-telegram}`.
