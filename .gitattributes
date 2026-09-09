@@ -1,0 +1,5 @@
+# Normalise les fins de ligne : LF dans le dépôt, peu importe l'OS.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.har binary
