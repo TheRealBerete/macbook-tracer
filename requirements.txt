@@ -1,0 +1,14 @@
+# Client HTTP (HTTP/2, timeouts propres)
+httpx==0.28.1
+
+# Validation / modèles de contrat pour les réponses API
+pydantic==2.11.9
+
+# Chargement du .env en variables d'environnement
+python-dotenv==1.1.1
+
+# Ordonnanceur (Sprint 4)
+APScheduler==3.11.0
+
+# --- Dev / tests ---
+pytest==8.4.2

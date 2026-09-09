@@ -1,0 +1,23 @@
+# --- Secrets & état local (NE JAMAIS commiter) ---
+.env
+state.json
+*.log
+
+# --- Captures réseau (peuvent contenir des cookies de session) ---
+*.har
+
+# --- Python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# --- OS / éditeurs ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

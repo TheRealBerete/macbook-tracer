@@ -1,0 +1,14 @@
+[
+  {
+    "name": "MacBook Pro 14 M3 Pro 18Go/512Go (Open Box - exemple HAR)",
+    "web_code": "20009307",
+    "alert_price": 1900,
+    "check_open_box": true
+  },
+  {
+    "name": "MacBook Pro 16 M3 Pro 18Go/512Go (Open Box - exemple HAR)",
+    "web_code": "19914759",
+    "alert_price": 2200,
+    "check_open_box": true
+  }
+]
