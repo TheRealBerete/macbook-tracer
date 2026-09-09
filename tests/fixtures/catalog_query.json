@@ -1,0 +1,283 @@
+{
+  "currentPage": 1,
+  "total": 5,
+  "totalPages": 1,
+  "pageSize": 20,
+  "items": [
+    {
+      "altLangSeoText": "tablette-idea-tab-11-po-128-go-android-15-4-go-de-lenovo-a-processeur-octocoeur-dimensity-6300-de-mediatek-gris-lunaire",
+      "categoryIds": [
+        "20001",
+        "30297",
+        "20356"
+      ],
+      "categoryName": "Tablettes Android",
+      "customerRating": 4.52,
+      "customerRatingCount": 33,
+      "customerReviewCount": 33,
+      "ehf": [
+        {
+          "province": "NL",
+          "amount": 0.6
+        },
+        {
+          "province": "PE",
+          "amount": 0.4
+        },
+        {
+          "province": "BC",
+          "amount": 0.5
+        },
+        {
+          "province": "SK",
+          "amount": 0.45
+        },
+        {
+          "province": "MB",
+          "amount": 0.45
+        },
+        {
+          "province": "QC",
+          "amount": 0.6
+        },
+        {
+          "province": "NB",
+          "amount": 0.65
+        },
+        {
+          "province": "YT",
+          "amount": 2
+        },
+        {
+          "province": "NS",
+          "amount": 0.4
+        },
+        {
+          "province": "AB",
+          "amount": 0.3
+        },
+        {
+          "province": "NT",
+          "amount": 3
+        }
+      ],
+      "hasFrenchContent": true,
+      "hideSavings": false,
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/193/19376/19376540.jpg",
+      "isAdvertised": true,
+      "isClearance": false,
+      "isFrenchCompliant": true,
+      "isInStoreOnly": false,
+      "isMarketplace": false,
+      "isOnlineOnly": false,
+      "isPreorderable": false,
+      "name": "Tablette Idea Tab 11 po 128 Go Android 15 4 Go de Lenovo à processeur octocoeur Dimensity 6300 de MediaTek - Gris lunaire",
+      "offerId": "0adcea19-032b-47b5-8d1b-c4d29f2cb37f",
+      "primaryParentCategoryId": "catalog/hierarchies/1/categories/20356",
+      "productType": "REGULAR",
+      "productUrl": "/fr-CA/produit/tablette-idea-tab-11-po-128-go-android-15-4-go-de-lenovo-a-processeur-octocoeur-dimensity-6300-de-mediatek-gris-lunaire/19376540",
+      "regularPrice": 269.99,
+      "requiresAgeVerification": false,
+      "saleEndDate": "2026-09-11T07:00:00Z",
+      "salePrice": 189.99,
+      "sellerId": "bbyca",
+      "seoText": "lenovo-idea-tab-11-128gb-4gb-android-15-tablet-with-mediatek-dimensity-6300-8-core-processor-luna-grey",
+      "shortDescription": "Travaillez et amusez-vous où que vous soyez avec cette élégante tablette de 11 po Idea Tab de Lenovo. Propulsée par Dimensity 6300 de MediaTek et 4 Go de mémoire vive, elle offre une performance fiable. Cette tablette est équipée de la fonction Encercler et rechercher avec Google et de Lenovo AI note pour vous aider à travailler plus efficacement. Les quatre haut-parleurs avec Dolby Atmos produisent un son riche et enveloppant.",
+      "sku": "19376540",
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/193/19376/19376540.jpg"
+    },
+    {
+      "altLangSeoText": "chargeur-portable-ldas-10000-nbsp-mah-avec-cables-usb-c-et-lightning-integres-ecran-acl-6-sorties-chargeur-portatif-a-chargement-rapide-pour-iphone-samsung-et-android-expedition-gratuite-noir",
+      "categoryIds": [
+        "20006",
+        "27236",
+        "27219",
+        "33407"
+      ],
+      "categoryName": "Chargeurs portables",
+      "customerRating": 4.38,
+      "customerRatingCount": 26,
+      "customerReviewCount": 26,
+      "ehf": [],
+      "hasFrenchContent": true,
+      "hideSavings": false,
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/194/19448/19448968.png",
+      "isAdvertised": false,
+      "isClearance": false,
+      "isFrenchCompliant": true,
+      "isInStoreOnly": false,
+      "isMarketplace": true,
+      "isOnlineOnly": true,
+      "isPreorderable": false,
+      "name": "Chargeur portable LDAS 10000&nbsp;mAh avec câbles USB-C et Lightning intégrés – écran ACL, 6 sorties, chargeur portatif à chargement rapide pour iPhone, Samsung et Android – EXPÉDITION GRATUITE (noir)",
+      "offerId": "5e0e986d-8dd0-492a-bbc9-107b047c379b",
+      "primaryParentCategoryId": "catalog/hierarchies/1/categories/33407",
+      "productType": "REGULAR",
+      "productUrl": "/fr-CA/produit/chargeur-portable-ldas-10000-nbsp-mah-avec-cables-usb-c-et-lightning-integres-ecran-acl-6-sorties-chargeur-portatif-a-chargement-rapide-pour-iphone-samsung-et-android-expedition-gratuite-noir/19448968",
+      "regularPrice": 69.99,
+      "requiresAgeVerification": false,
+      "saleEndDate": "2027-07-01T06:59:59Z",
+      "salePrice": 23.99,
+      "sellerId": "1125512",
+      "seoText": "ldas-10000mah-power-bank-with-built-in-usb-c-lightning-cables-lcd-display-6-outputs-fast-charging-portable-charger-for-iphone-samsung-android-free-shipping-black",
+      "shortDescription": "Rechargez jusqu'à 6 appareils à la fois avec le chargeur portable LDAS 10000&nbsp;mAh. Trois câbles intégrés (USB-C, Lightning, micro-USB) et trois ports de sortie supplémentaires, plus besoin de chercher des câbles. L'écran ACL affiche exactement la batterie restante et les trois options d'entrée rendent la recharge flexible. Compatible avec les iPhone, Galaxy de Samsung, Pixel de Google, iPad, AirPods et et la plupart des appareils USB. Conçu au Canada par LDAS Electronics. Couvert par une garantie de 1 ans avec expédition gratuite partout au Canada.",
+      "sku": "19448968",
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/194/19448/19448968.png"
+    },
+    {
+      "altLangSeoText": "lave-vaisselle-a-commandes-sur-le-dessus-resistant-aux-traces-de-doigts-3e-panier-et-sechage-ameliore-truesteam-de-24-po-44-db-de-lg-energy-star-ldps6762s-inox",
+      "categoryIds": [
+        "26517",
+        "11962778",
+        "34432",
+        "12004360"
+      ],
+      "categoryName": "Lave-vaisselle encastrables",
+      "customerRating": 4.41,
+      "customerRatingCount": 593,
+      "customerReviewCount": 593,
+      "ehf": [
+        {
+          "province": "BC",
+          "amount": 5
+        }
+      ],
+      "hasFrenchContent": true,
+      "hideSavings": false,
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/166/16653/16653776.jpg",
+      "isAdvertised": true,
+      "isClearance": false,
+      "isFrenchCompliant": true,
+      "isInStoreOnly": false,
+      "isMarketplace": false,
+      "isOnlineOnly": false,
+      "isPreorderable": false,
+      "name": "Lave-vaisselle à commandes sur le dessus, résistant aux traces de doigts, 3e panier et séchage amélioré TrueSteam de 24 po 44 dB de LG - Energy Star (LDPS6762S) - Inox",
+      "offerId": "5d46df16-960e-4bce-bd03-780a9aa02a0a",
+      "primaryParentCategoryId": "catalog/hierarchies/1/categories/12004360",
+      "productType": "REGULAR",
+      "productUrl": "/fr-CA/produit/lave-vaisselle-a-commandes-sur-le-dessus-resistant-aux-traces-de-doigts-3e-panier-et-sechage-ameliore-truesteam-de-24-po-44-db-de-lg-energy-star-ldps6762s-inox/16653776",
+      "regularPrice": 1199.99,
+      "requiresAgeVerification": false,
+      "saleEndDate": "2026-09-11T07:00:00Z",
+      "salePrice": 799.99,
+      "sellerId": "bbyca",
+      "seoText": "lg-24-44db-smart-top-control-truesteam-dynamic-dry-dishwasher-with-third-rack-energy-star-ldps6762s-smudge-resistant-ss",
+      "shortDescription": "Le lave-vaisselle à commandes sur le dessus LDPS6762S de LG simplifie le nettoyage grâce aux technologies innovantes QuadWash Pro et Dynamic Heat Dry, pour de la vaisselle étincelante en seulement une heure. Profitez de paniers réglables qui peuvent contenir plus d'articles avec moins de tracas, d'un fonctionnement silencieux à 44 dB et d'alertes intelligentes qui aident à assurer le bon fonctionnement.<ul><li>Peut contenir 15 couverts, idéal pour les grandes maisons et les gros chargements</li><li>Cote silencieuse à 44 dB, comparable à une bibliothèque silencieuse pour les espaces ouverts</li></ul>",
+      "sku": "16653776",
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/166/16653/16653776.jpg"
+    },
+    {
+      "altLangSeoText": "montre-de-course-gps-connectee-bluetooth-amoled-garmin-forerunner-165-de-45-mm-noir-gris-ardoise",
+      "categoryIds": [
+        "34444",
+        "661054",
+        "35439"
+      ],
+      "categoryName": "Montres intelligentes",
+      "customerRating": 4.83,
+      "customerRatingCount": 355,
+      "customerReviewCount": 355,
+      "ehf": [
+        {
+          "province": "NL",
+          "amount": 0.95
+        },
+        {
+          "province": "PE",
+          "amount": 0.5
+        },
+        {
+          "province": "BC",
+          "amount": 0.95
+        },
+        {
+          "province": "SK",
+          "amount": 0.35
+        },
+        {
+          "province": "QC",
+          "amount": 0.95
+        },
+        {
+          "province": "NB",
+          "amount": 0.95
+        },
+        {
+          "province": "YT",
+          "amount": 0.5
+        },
+        {
+          "province": "NS",
+          "amount": 0.5
+        },
+        {
+          "province": "AB",
+          "amount": 0.55
+        }
+      ],
+      "hasFrenchContent": true,
+      "hideSavings": false,
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/177/17718/17718742.jpg",
+      "isAdvertised": true,
+      "isClearance": false,
+      "isFrenchCompliant": true,
+      "isInStoreOnly": false,
+      "isMarketplace": false,
+      "isOnlineOnly": false,
+      "isPreorderable": false,
+      "name": "Montre de course GPS connectée Bluetooth AMOLED Garmin Forerunner 165 de 45 mm - Noir/gris ardoise",
+      "offerId": "7d168840-7b8c-4ece-880e-7c8df930beb8",
+      "primaryParentCategoryId": "catalog/hierarchies/1/categories/35439",
+      "productType": "REGULAR",
+      "productUrl": "/fr-CA/produit/montre-de-course-gps-connectee-bluetooth-amoled-garmin-forerunner-165-de-45-mm-noir-gris-ardoise/17718742",
+      "regularPrice": 299.99,
+      "requiresAgeVerification": false,
+      "saleEndDate": "2026-09-11T07:00:00Z",
+      "salePrice": 279.99,
+      "sellerId": "bbyca",
+      "seoText": "garmin-forerunner-165-amoled-45mm-bluetooth-gps-running-smartwatch-black-slate-grey",
+      "shortDescription": "Forerunner 165 intègre un écran AMOLED lumineux au suivi de course quotidien. Elle aide à consulter rapidement l’allure, la distance et la fréquence cardiaque, et à bâtir une routine de course hebdomadaire avec des données de bien-être, des entraînements du matin à la récupération du soir.<ul><li>Écran AMOLED qui garde l’allure, la distance et la fréquence cardiaque lisibles</li><li>Musique sur la montre et suivi du bien-être quotidien pendant la course</li></ul><small>Description générée par IA, vérifiée pour en assurer l'exactitude.</small>",
+      "sku": "17718742",
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/177/17718/17718742.jpg"
+    },
+    {
+      "altLangSeoText": "boite-ouverte-casque-d-ecoute-bluetooth-a-suppression-du-bruit-airpods-max-usb-c-d-apple-comete",
+      "categoryIds": [
+        "659699",
+        "21268",
+        "21271",
+        "22457273"
+      ],
+      "categoryName": "Casques d'écoute circum-auriculaires sans fil",
+      "customerRating": 3.29,
+      "customerRatingCount": 7,
+      "customerReviewCount": 7,
+      "ehf": [],
+      "hasFrenchContent": true,
+      "hideSavings": false,
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/185/18522/18522252.jpeg",
+      "isAdvertised": false,
+      "isClearance": false,
+      "isFrenchCompliant": true,
+      "isInStoreOnly": false,
+      "isMarketplace": true,
+      "isOnlineOnly": true,
+      "isPreorderable": false,
+      "name": "Boîte ouverte - Casque d'écoute Bluetooth à suppression du bruit AirPods Max (USB-C) d'Apple - Comète",
+      "offerId": "047a0964-d6ec-42b3-b0b6-48cf9ec7b2e2",
+      "primaryParentCategoryId": "catalog/hierarchies/1/categories/22457273",
+      "productType": "REGULAR",
+      "productUrl": "/fr-CA/produit/boite-ouverte-casque-d-ecoute-bluetooth-a-suppression-du-bruit-airpods-max-usb-c-d-apple-comete/18522252",
+      "regularPrice": 779.99,
+      "requiresAgeVerification": false,
+      "saleEndDate": null,
+      "salePrice": 479.99,
+      "sellerId": "418240",
+      "seoText": "open-box-apple-airpods-max-usb-c-over-ear-noise-cancelling-bluetooth-headphones-starlight",
+      "shortDescription": "Boîte ouverte - Casque d'écoute Bluetooth à suppression du bruit AirPods Max (USB-C) d'Apple - Comète",
+      "sku": "18522252",
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/185/18522/18522252.jpeg"
+    }
+  ]
+}

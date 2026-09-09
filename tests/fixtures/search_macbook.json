@@ -1,0 +1,935 @@
+{
+  "currentPage": 1,
+  "total": 190,
+  "totalPages": 8,
+  "pageSize": 24,
+  "products": [
+    {
+      "sku": "20009264",
+      "name": "(Remis à neuf - Très bon état) MacBook Pro de 14 po (14 Go, argenté) Portable M3 Pro à 11 coeurs de 4,05 GHz (2023); Flash HD de 1 To et RAM de 36 Go; Mac OS/Windows 11 (certifié, garantie de 1 ans)",
+      "shortDescription": "Utilisez Windows côte à côte avec macOS (aucun redémarrage requis) Parallels.com Dual Boot macOS/Windows 11 installé. Le modèle MacBook Pro « M3 Pro » à 11 coeurs avec processeur graphique 14 coeurs de 14 po (fin 2023) est doté d'un 4,05 GHz processeur Apple M3 Pro d'Apple avec onze coeurs (5 coeurs de performance et 6 coeurs d'efficacité), d'un processeur graphique à 14 coeurs, d'un moteur neural à 16 coeurs",
+      "customerRating": 0.0,
+      "customerRatingCount": 0,
+      "customerReviewCount": 0,
+      "productUrl": "/fr-ca/produit/remis-a-neuf-tres-bon-etat-macbook-pro-de-14-nbsp-po-14-nbsp-go-argente-portable-m3-pro-a-11-coeurs-de-4-05-ghz-2023-flash-hd-de-1-to-et-ram-de-36-nbsp-go-mac-os-windows-11-certifie-garantie-de-1-ans/20009264",
+      "currentRegion": "ON",
+      "hideSavings": false,
+      "hideSaleEndDate": false,
+      "productType": null,
+      "regularPrice": 3366.36,
+      "salePrice": 2693.09,
+      "saleEndDate": 1791097199000,
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/200/20009/20009264.jpeg",
+      "primaryParentCategoryId": "12746019",
+      "categoryName": "MacBook Pro d'Apple",
+      "ehf": 0.0,
+      "seoText": "remis-a-neuf-tres-bon-etat-macbook-pro-de-14-nbsp-po-14-nbsp-go-argente-portable-m3-pro-a-11-coeurs-de-4-05-ghz-2023-flash-hd-de-1-to-et-ram-de-36-nbsp-go-mac-os-windows-11-certifie-garantie-de-1-ans",
+      "sellerId": null,
+      "seller": {
+        "canSell": true,
+        "id": "69817948",
+        "name": "Electronic Lifecycle Solutions",
+        "isPremierSeller": null
+      },
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/200/20009/20009264.jpeg",
+      "altLangSeoText": null,
+      "offerId": null,
+      "priceUnit": "",
+      "requiresAgeVerification": false,
+      "isPriceEndsLabel": false,
+      "hasPromotion": true,
+      "isAdvertised": false,
+      "isClearance": false,
+      "isInStoreOnly": false,
+      "isOnlineOnly": true,
+      "isVisible": true,
+      "isPreorderable": false,
+      "isFrenchCompliant": true,
+      "isMarketplace": true,
+      "hasFrenchContent": false,
+      "categoryIds": [
+        "20001",
+        "20352",
+        "12746015",
+        "12746019"
+      ],
+      "swatch": "Argent"
+    },
+    {
+      "sku": "20009307",
+      "name": "(Boîte ouverte - Très bon état) MacBook Pro de 14 po (14GPU, argenté) Portable M3 Pro à 11 coeurs de 4,05 GHz (2023); Flash HD de 512 Go et RAM de 18 Go; Mac OS (certifié, garantie de 1 ans)",
+      "shortDescription": "Le modèle MacBook Pro « M3 Pro » à 11 coeurs avec processeur graphique 14 coeurs de 14 po (fin 2023) est doté d'un 4,05 GHz processeur Apple M3 Pro d'Apple avec onze coeurs (5 coeurs de performance et 6 coeurs d'efficacité), d'un processeur graphique à 14 coeurs, d'un moteur neural à 16 coeurs",
+      "customerRating": 0.0,
+      "customerRatingCount": 0,
+      "customerReviewCount": 0,
+      "productUrl": "/fr-ca/produit/boite-ouverte-tres-bon-etat-macbook-pro-de-14-nbsp-po-14gpu-argente-portable-m3-pro-a-11-coeurs-de-4-05-ghz-2023-flash-hd-de-512-nbsp-go-et-ram-de-18-nbsp-go-mac-os-certifie-garantie-de-1-ans/20009307",
+      "currentRegion": "ON",
+      "hideSavings": true,
+      "hideSaleEndDate": true,
+      "productType": null,
+      "regularPrice": 2187.0,
+      "salePrice": 2187.0,
+      "saleEndDate": null,
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/200/20009/20009307.jpeg",
+      "primaryParentCategoryId": "12746019",
+      "categoryName": "MacBook Pro d'Apple",
+      "ehf": 0.0,
+      "seoText": "boite-ouverte-tres-bon-etat-macbook-pro-de-14-nbsp-po-14gpu-argente-portable-m3-pro-a-11-coeurs-de-4-05-ghz-2023-flash-hd-de-512-nbsp-go-et-ram-de-18-nbsp-go-mac-os-certifie-garantie-de-1-ans",
+      "sellerId": null,
+      "seller": {
+        "canSell": true,
+        "id": "1226538",
+        "name": "GainSaver",
+        "isPremierSeller": null
+      },
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/200/20009/20009307.jpeg",
+      "altLangSeoText": null,
+      "offerId": null,
+      "priceUnit": "",
+      "requiresAgeVerification": false,
+      "isPriceEndsLabel": false,
+      "hasPromotion": false,
+      "isAdvertised": false,
+      "isClearance": false,
+      "isInStoreOnly": false,
+      "isOnlineOnly": true,
+      "isVisible": true,
+      "isPreorderable": false,
+      "isFrenchCompliant": true,
+      "isMarketplace": true,
+      "hasFrenchContent": false,
+      "categoryIds": [
+        "20001",
+        "20352",
+        "12746015",
+        "12746019"
+      ],
+      "swatch": "Argent"
+    },
+    {
+      "sku": "17664903",
+      "name": "Refurbished (Excellent) - Apple MacBook Pro (Fall 2023) 16.2\" - Space Black (Apple M3 Pro / 512GB SSD / 18GB RAM) - English",
+      "shortDescription": "Supercharged by M3 Pro chip, Apple MacBook Pro takes its power and efficiency further than ever. It delivers exceptional performance whether it’s plugged in or not, and now has even longer battery life. Combined with a stunning Liquid Retina XDR display and all the ports you need—this is a pro laptop without equal.",
+      "customerRating": 0.0,
+      "customerRatingCount": 0,
+      "customerReviewCount": 0,
+      "productUrl": "/fr-ca/produit/refurbished-excellent-apple-macbook-pro-fall-2023-16-2-space-black-apple-m3-pro-512gb-ssd-18gb-ram-english/17664903",
+      "currentRegion": "ON",
+      "hideSavings": false,
+      "hideSaleEndDate": true,
+      "productType": null,
+      "regularPrice": 2599.97,
+      "salePrice": 2319.99,
+      "saleEndDate": null,
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/176/17664/17664903.jpeg",
+      "primaryParentCategoryId": "12746019",
+      "categoryName": "MacBook Pro d'Apple",
+      "ehf": 0.0,
+      "seoText": "refurbished-excellent-apple-macbook-pro-fall-2023-16-2-space-black-apple-m3-pro-512gb-ssd-18gb-ram-english",
+      "sellerId": null,
+      "seller": {
+        "canSell": true,
+        "id": "750480",
+        "name": "Tech Outlet Hub",
+        "isPremierSeller": true
+      },
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/176/17664/17664903.jpeg",
+      "altLangSeoText": null,
+      "offerId": null,
+      "priceUnit": "",
+      "requiresAgeVerification": false,
+      "isPriceEndsLabel": false,
+      "hasPromotion": true,
+      "isAdvertised": false,
+      "isClearance": false,
+      "isInStoreOnly": false,
+      "isOnlineOnly": true,
+      "isVisible": true,
+      "isPreorderable": false,
+      "isFrenchCompliant": true,
+      "isMarketplace": true,
+      "hasFrenchContent": false,
+      "categoryIds": [
+        "20001",
+        "20352",
+        "12746015",
+        "12746019"
+      ]
+    },
+    {
+      "sku": "19914759",
+      "name": "(Open Box - Excellent) Macbook Pro 16-inch (18-GPU, Space Black) 4.05Ghz 12-Core M3 Pro (2023) Laptop 512GB Flash HD & 18GB RAM-Mac OS (Certified, 1 Yr Warranty)",
+      "shortDescription": "Le MacBook Pro « M3 Pro » à 12 cœurs/processeur graphique 18 cœurs de 16 po (fin 2023) comprend un 4,05 GHz processeur Apple M3 Pro d'Intel avec douze cœurs (6 cœurs de performance et 6 cœurs d'efficacité), un processeur graphique 18 cœurs, un Neural Engine 16 cœurs, une caméra Web FaceTime HD intégrée 1080p, 16,2 po un panoramique à rétroéclairage DEL haute résolution 3456 x 2234 Liquid Retina XDR.",
+      "customerRating": 0.0,
+      "customerRatingCount": 0,
+      "customerReviewCount": 0,
+      "productUrl": "/fr-ca/produit/open-box-excellent-macbook-pro-16-inch-18-gpu-space-black-4-05ghz-12-core-m3-pro-2023-laptop-512gb-flash-hd-18gb-ram-mac-os-certified-1-yr-warranty/19914759",
+      "currentRegion": "ON",
+      "hideSavings": true,
+      "hideSaleEndDate": true,
+      "productType": null,
+      "regularPrice": 2408.0,
+      "salePrice": 2408.0,
+      "saleEndDate": null,
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/199/19914/19914759.jpeg",
+      "primaryParentCategoryId": "12746019",
+      "categoryName": "MacBook Pro d'Apple",
+      "ehf": 0.0,
+      "seoText": "open-box-excellent-macbook-pro-16-inch-18-gpu-space-black-4-05ghz-12-core-m3-pro-2023-laptop-512gb-flash-hd-18gb-ram-mac-os-certified-1-yr-warranty",
+      "sellerId": null,
+      "seller": {
+        "canSell": true,
+        "id": "1226538",
+        "name": "GainSaver",
+        "isPremierSeller": null
+      },
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/199/19914/19914759.jpeg",
+      "altLangSeoText": null,
+      "offerId": null,
+      "priceUnit": "",
+      "requiresAgeVerification": false,
+      "isPriceEndsLabel": false,
+      "hasPromotion": false,
+      "isAdvertised": false,
+      "isClearance": false,
+      "isInStoreOnly": false,
+      "isOnlineOnly": true,
+      "isVisible": true,
+      "isPreorderable": false,
+      "isFrenchCompliant": true,
+      "isMarketplace": true,
+      "hasFrenchContent": false,
+      "categoryIds": [
+        "20001",
+        "20352",
+        "12746015",
+        "12746019"
+      ],
+      "swatch": "Noir infini"
+    },
+    {
+      "sku": "19914602",
+      "name": "(Refurbished - Excellent) Macbook Pro 16-inch (18-GPU, Space Black) 4.05Ghz 12-Core M3 Pro (2023) Laptop 512GB Flash HD & 18GB RAM-Mac OS/Win 11 (Certified, 1 Yr Warranty)",
+      "shortDescription": "Utilisez Windows côte à côte avec macOS (aucun redémarrage requis) Parallels.com Dual Boot macOS/Windows 11 installé. Le MacBook Pro « M3 Pro » à 12 cœurs/processeur graphique 18 cœurs de 16 po (fin 2023) comprend un 4,05 GHz processeur Apple M3 Pro d'Intel avec douze cœurs (6 cœurs de performance et 6 cœurs d'efficacité), un processeur graphique 18 cœurs, un Neural Engine 16 cœurs, une caméra Web FaceTime HD intégrée 1080p, 16,2 po un panoramique à rétroéclairage DEL haute résolution 3456 x 2234 Liquid Retina XDR.",
+      "customerRating": 0.0,
+      "customerRatingCount": 0,
+      "customerReviewCount": 0,
+      "productUrl": "/fr-ca/produit/refurbished-excellent-macbook-pro-16-inch-18-gpu-space-black-4-05ghz-12-core-m3-pro-2023-laptop-512gb-flash-hd-18gb-ram-mac-os-win-11-certified-1-yr-warranty/19914602",
+      "currentRegion": "ON",
+      "hideSavings": true,
+      "hideSaleEndDate": true,
+      "productType": null,
+      "regularPrice": 2422.0,
+      "salePrice": 2422.0,
+      "saleEndDate": null,
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/199/19914/19914602.jpeg",
+      "primaryParentCategoryId": "12746019",
+      "categoryName": "MacBook Pro d'Apple",
+      "ehf": 0.0,
+      "seoText": "refurbished-excellent-macbook-pro-16-inch-18-gpu-space-black-4-05ghz-12-core-m3-pro-2023-laptop-512gb-flash-hd-18gb-ram-mac-os-win-11-certified-1-yr-warranty",
+      "sellerId": null,
+      "seller": {
+        "canSell": true,
+        "id": "1226538",
+        "name": "GainSaver",
+        "isPremierSeller": null
+      },
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/199/19914/19914602.jpeg",
+      "altLangSeoText": null,
+      "offerId": null,
+      "priceUnit": "",
+      "requiresAgeVerification": false,
+      "isPriceEndsLabel": false,
+      "hasPromotion": false,
+      "isAdvertised": false,
+      "isClearance": false,
+      "isInStoreOnly": false,
+      "isOnlineOnly": true,
+      "isVisible": true,
+      "isPreorderable": false,
+      "isFrenchCompliant": true,
+      "isMarketplace": true,
+      "hasFrenchContent": false,
+      "categoryIds": [
+        "20001",
+        "20352",
+        "12746015",
+        "12746019"
+      ],
+      "swatch": "Noir infini"
+    },
+    {
+      "sku": "20009244",
+      "name": "(Remis à neuf - Très bon état) MacBook Pro de 14 po (14 Go, argenté) Portable M3 Pro à 11 coeurs de 4,05 GHz (2023); Flash HD de 1 To et RAM de 36 Go; Mac OS (certifié, garantie de 1 ans)",
+      "shortDescription": "Le modèle MacBook Pro « M3 Pro » à 11 coeurs avec processeur graphique 14 coeurs de 14 po (fin 2023) est doté d'un 4,05 GHz processeur Apple M3 Pro d'Apple avec onze coeurs (5 coeurs de performance et 6 coeurs d'efficacité), d'un processeur graphique à 14 coeurs, d'un moteur neural à 16 coeurs",
+      "customerRating": 0.0,
+      "customerRatingCount": 0,
+      "customerReviewCount": 0,
+      "productUrl": "/fr-ca/produit/remis-a-neuf-tres-bon-etat-macbook-pro-de-14-nbsp-po-14-nbsp-go-argente-portable-m3-pro-a-11-coeurs-de-4-05-ghz-2023-flash-hd-de-1-to-et-ram-de-36-nbsp-go-mac-os-certifie-garantie-de-1-ans/20009244",
+      "currentRegion": "ON",
+      "hideSavings": false,
+      "hideSaleEndDate": false,
+      "productType": null,
+      "regularPrice": 3366.36,
+      "salePrice": 2693.09,
+      "saleEndDate": 1791097199000,
+      "thumbnailImage": "https://multimedia.bbycastatic.ca/multimedia/products/150x150/200/20009/20009244.jpeg",
+      "primaryParentCategoryId": "12746019",
+      "categoryName": "MacBook Pro d'Apple",
+      "ehf": 0.0,
+      "seoText": "remis-a-neuf-tres-bon-etat-macbook-pro-de-14-nbsp-po-14-nbsp-go-argente-portable-m3-pro-a-11-coeurs-de-4-05-ghz-2023-flash-hd-de-1-to-et-ram-de-36-nbsp-go-mac-os-certifie-garantie-de-1-ans",
+      "sellerId": null,
+      "seller": {
+        "canSell": true,
+        "id": "69817948",
+        "name": "Electronic Lifecycle Solutions",
+        "isPremierSeller": null
+      },
+      "highResImage": "https://multimedia.bbycastatic.ca/multimedia/products/1500x1500/200/20009/20009244.jpeg",
+      "altLangSeoText": null,
+      "offerId": null,
+      "priceUnit": "",
+      "requiresAgeVerification": false,
+      "isPriceEndsLabel": false,
+      "hasPromotion": true,
+      "isAdvertised": false,
+      "isClearance": false,
+      "isInStoreOnly": false,
+      "isOnlineOnly": true,
+      "isVisible": true,
+      "isPreorderable": false,
+      "isFrenchCompliant": true,
+      "isMarketplace": true,
+      "hasFrenchContent": false,
+      "categoryIds": [
+        "20001",
+        "20352",
+        "12746015",
+        "12746019"
+      ],
+      "swatch": "Argent"
+    }
+  ],
+  "paths": [
+    {
+      "name": "macbook pro m3 pro",
+      "value": "",
+      "selectPath": "",
+      "unselectPath": "",
+      "type": "Query"
+    }
+  ],
+  "facets": [
+    {
+      "name": "Offres courantes",
+      "systemName": "currentoffers0enrchstring",
+      "count": 0,
+      "filters": [
+        {
+          "name": "En solde",
+          "path": "currentoffers0enrchstring%3AEn+solde",
+          "count": 138,
+          "isSelected": false
+        },
+        {
+          "name": "En liquidation",
+          "path": "currentoffers0enrchstring%3AEn+liquidation",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Boîte ouverte",
+          "path": "currentoffers0enrchstring%3ABo%C3%AEte+ouverte",
+          "count": 24,
+          "isSelected": false
+        },
+        {
+          "name": "Remis à neuf",
+          "path": "currentoffers0enrchstring%3ARemis+%C3%A0+neuf",
+          "count": 39,
+          "isSelected": false
+        },
+        {
+          "name": "En ligne seulement",
+          "path": "currentoffers0enrchstring%3AEn+ligne+seulement",
+          "count": 187,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": true,
+      "order": 0,
+      "facetDefinition": null
+    },
+    {
+      "name": "Rabais",
+      "systemName": "discount0enrchstring",
+      "count": 4,
+      "filters": [
+        {
+          "name": "20% de rabais ou plus",
+          "path": "discount0enrchstring%3A20%25+de+rabais+ou+plus",
+          "count": 63,
+          "isSelected": false
+        },
+        {
+          "name": "Tous les articles à prix réduit",
+          "path": "discount0enrchstring%3ATous+les+articles+%C3%A0+prix+r%C3%A9duit",
+          "count": 138,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": true,
+      "order": 1,
+      "facetDefinition": null
+    },
+    {
+      "name": "Vendu et expédié par",
+      "systemName": "soldandshippedby0enrchstring",
+      "count": 0,
+      "filters": [
+        {
+          "name": "Best Buy",
+          "path": "soldandshippedby0enrchstring%3ABest+Buy",
+          "count": 3,
+          "isSelected": false
+        },
+        {
+          "name": "Vendeur sur la Place de marché",
+          "path": "soldandshippedby0enrchstring%3AVendeur+sur+la+Place+de+march%C3%A9",
+          "count": 187,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": true,
+      "order": 2,
+      "facetDefinition": null
+    },
+    {
+      "name": "Statut",
+      "systemName": "status0enrchstring",
+      "count": 1,
+      "filters": [
+        {
+          "name": "Quoi de neuf",
+          "path": "status0enrchstring%3AQuoi+de+neuf",
+          "count": 33,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": true,
+      "order": 3,
+      "facetDefinition": null
+    },
+    {
+      "name": "Marque",
+      "systemName": "brandName",
+      "count": 17,
+      "filters": [
+        {
+          "name": "APPLE",
+          "path": "brandName%3AAPPLE",
+          "count": 66,
+          "isSelected": false
+        },
+        {
+          "name": "MICROSOFT",
+          "path": "brandName%3AMICROSOFT",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "ANTOGOO V",
+          "path": "brandName%3AANTOGOO+V",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "AURORA",
+          "path": "brandName%3AAURORA",
+          "count": 2,
+          "isSelected": false
+        },
+        {
+          "name": "COMFYABLE",
+          "path": "brandName%3ACOMFYABLE",
+          "count": 3,
+          "isSelected": false
+        },
+        {
+          "name": "DOLAER",
+          "path": "brandName%3ADOLAER",
+          "count": 10,
+          "isSelected": false
+        },
+        {
+          "name": "FERKURN",
+          "path": "brandName%3AFERKURN",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "GENERIC",
+          "path": "brandName%3AGENERIC",
+          "count": 21,
+          "isSelected": false
+        },
+        {
+          "name": "HSEOK",
+          "path": "brandName%3AHSEOK",
+          "count": 2,
+          "isSelected": false
+        },
+        {
+          "name": "HYZUO",
+          "path": "brandName%3AHYZUO",
+          "count": 25,
+          "isSelected": false
+        },
+        {
+          "name": "LDAS ELECTRONICS",
+          "path": "brandName%3ALDAS+ELECTRONICS",
+          "count": 3,
+          "isSelected": false
+        },
+        {
+          "name": "MOSISO",
+          "path": "brandName%3AMOSISO",
+          "count": 12,
+          "isSelected": false
+        },
+        {
+          "name": "OECECA",
+          "path": "brandName%3AOECECA",
+          "count": 22,
+          "isSelected": false
+        },
+        {
+          "name": "SAHARA CASE",
+          "path": "brandName%3ASAHARA+CASE",
+          "count": 3,
+          "isSelected": false
+        },
+        {
+          "name": "SLOWMOOSE",
+          "path": "brandName%3ASLOWMOOSE",
+          "count": 9,
+          "isSelected": false
+        },
+        {
+          "name": "STM STUDIO",
+          "path": "brandName%3ASTM+STUDIO",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "SUPERSHIELD",
+          "path": "brandName%3ASUPERSHIELD",
+          "count": 4,
+          "isSelected": false
+        },
+        {
+          "name": "SVIEW",
+          "path": "brandName%3ASVIEW",
+          "count": 2,
+          "isSelected": false
+        },
+        {
+          "name": "TASNIM",
+          "path": "brandName%3ATASNIM",
+          "count": 2,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": true,
+      "order": 4,
+      "facetDefinition": null
+    },
+    {
+      "name": "Vendu par",
+      "systemName": "shopWith",
+      "count": 0,
+      "filters": [
+        {
+          "name": "Best Buy Seulement",
+          "path": "shopWith%3ABest+Buy+Seulement",
+          "count": 3,
+          "isSelected": false
+        },
+        {
+          "name": "Vendeur étoiles",
+          "path": "shopWith%3AVendeur+%C3%A9toiles",
+          "count": 5,
+          "isSelected": false
+        },
+        {
+          "name": "Tous les vendeurs de la Place de marché",
+          "path": "shopWith%3ATous+les+vendeurs+de+la+Place+de+march%C3%A9",
+          "count": 187,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": true,
+      "order": 5,
+      "facetDefinition": null
+    },
+    {
+      "name": "Vendeur",
+      "systemName": "sellerName",
+      "count": 36,
+      "filters": [
+        {
+          "name": "SUMSAL MARKET INC",
+          "path": "sellerName%3ASUMSAL+MARKET+INC",
+          "count": 38,
+          "isSelected": false
+        },
+        {
+          "name": "GainSaver",
+          "path": "sellerName%3AGainSaver",
+          "count": 22,
+          "isSelected": false
+        },
+        {
+          "name": "TechCove",
+          "path": "sellerName%3ATechCove",
+          "count": 20,
+          "isSelected": false
+        },
+        {
+          "name": "MS Tech",
+          "path": "sellerName%3AMS+Tech",
+          "count": 16,
+          "isSelected": false
+        },
+        {
+          "name": "Blue Ocean",
+          "path": "sellerName%3ABlue+Ocean",
+          "count": 10,
+          "isSelected": false
+        },
+        {
+          "name": "GoodLuck Tech",
+          "path": "sellerName%3AGoodLuck+Tech",
+          "count": 9,
+          "isSelected": false
+        },
+        {
+          "name": "Canamera Trading",
+          "path": "sellerName%3ACanamera+Trading",
+          "count": 7,
+          "isSelected": false
+        },
+        {
+          "name": "Electronic Lifecycle Solutions",
+          "path": "sellerName%3AElectronic+Lifecycle+Solutions",
+          "count": 7,
+          "isSelected": false
+        },
+        {
+          "name": "DolaerElectron",
+          "path": "sellerName%3ADolaerElectron",
+          "count": 6,
+          "isSelected": false
+        },
+        {
+          "name": "Gizmo Cabin",
+          "path": "sellerName%3AGizmo+Cabin",
+          "count": 6,
+          "isSelected": false
+        },
+        {
+          "name": "Renewed Tech",
+          "path": "sellerName%3ARenewed+Tech",
+          "count": 6,
+          "isSelected": false
+        },
+        {
+          "name": "SuperShield",
+          "path": "sellerName%3ASuperShield",
+          "count": 4,
+          "isSelected": false
+        },
+        {
+          "name": "Tech Outlet Hub",
+          "path": "sellerName%3ATech+Outlet+Hub",
+          "count": 4,
+          "isSelected": false
+        },
+        {
+          "name": "BestBuyCanada",
+          "path": "sellerName%3ABestBuyCanada",
+          "count": 3,
+          "isSelected": false
+        },
+        {
+          "name": "LDAS ELECTRONICS",
+          "path": "sellerName%3ALDAS+ELECTRONICS",
+          "count": 3,
+          "isSelected": false
+        },
+        {
+          "name": "Sahara Case",
+          "path": "sellerName%3ASahara+Case",
+          "count": 3,
+          "isSelected": false
+        },
+        {
+          "name": "SaveOnMacs",
+          "path": "sellerName%3ASaveOnMacs",
+          "count": 3,
+          "isSelected": false
+        },
+        {
+          "name": "Auroraoffer",
+          "path": "sellerName%3AAuroraoffer",
+          "count": 2,
+          "isSelected": false
+        },
+        {
+          "name": "ITRefurbs",
+          "path": "sellerName%3AITRefurbs",
+          "count": 2,
+          "isSelected": false
+        },
+        {
+          "name": "Mémoire directe",
+          "path": "sellerName%3AM%C3%A9moire+directe",
+          "count": 2,
+          "isSelected": false
+        },
+        {
+          "name": "TASNIM",
+          "path": "sellerName%3ATASNIM",
+          "count": 2,
+          "isSelected": false
+        },
+        {
+          "name": "DigitalComputer",
+          "path": "sellerName%3ADigitalComputer",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Dr. Liquidator",
+          "path": "sellerName%3ADr.+Liquidator",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Flipafone",
+          "path": "sellerName%3AFlipafone",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Gizmodo Cellular",
+          "path": "sellerName%3AGizmodo+Cellular",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Hyper Mega Electronics",
+          "path": "sellerName%3AHyper+Mega+Electronics",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Luxnova Commerce",
+          "path": "sellerName%3ALuxnova+Commerce",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Mega Dealz",
+          "path": "sellerName%3AMega+Dealz",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Nem Distribution",
+          "path": "sellerName%3ANem+Distribution",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Openbox Electronics",
+          "path": "sellerName%3AOpenbox+Electronics",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "PHONE PLANET",
+          "path": "sellerName%3APHONE+PLANET",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "RBSDIST",
+          "path": "sellerName%3ARBSDIST",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Supplytronics",
+          "path": "sellerName%3ASupplytronics",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "Tech Outlet Center",
+          "path": "sellerName%3ATech+Outlet+Center",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "TechReset",
+          "path": "sellerName%3ATechReset",
+          "count": 1,
+          "isSelected": false
+        },
+        {
+          "name": "appareil canadien",
+          "path": "sellerName%3Aappareil+canadien",
+          "count": 1,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": true,
+      "order": 6,
+      "facetDefinition": null
+    },
+    {
+      "name": "Taille de l’appartement",
+      "systemName": "apartmentsizedishwasher0enrchrange",
+      "count": 1,
+      "filters": [
+        {
+          "name": "Oui",
+          "path": "apartmentsizedishwasher0enrchrange%3AOui",
+          "count": 2,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": true,
+      "order": 7,
+      "facetDefinition": null
+    },
+    {
+      "name": "Avis des clients",
+      "systemName": "customerratinggroup0enrchstring",
+      "count": 2,
+      "filters": [
+        {
+          "name": "5 étoiles",
+          "path": "customerratinggroup0enrchstring%3A5+%C3%A9toiles",
+          "count": 6,
+          "isSelected": false
+        },
+        {
+          "name": "4 étoiles et plus",
+          "path": "customerratinggroup0enrchstring%3A4+%C3%A9toiles+et+plus",
+          "count": 8,
+          "isSelected": false
+        },
+        {
+          "name": "3 étoiles et plus",
+          "path": "customerratinggroup0enrchstring%3A3+%C3%A9toiles+et+plus",
+          "count": 9,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": true,
+      "order": 8,
+      "facetDefinition": null
+    },
+    {
+      "name": "Écran tactile",
+      "systemName": "custom0touchscreendisplay",
+      "count": 1,
+      "filters": [
+        {
+          "name": "Non",
+          "path": "custom0touchscreendisplay%3ANon",
+          "count": 44,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": true,
+      "order": 9,
+      "facetDefinition": null
+    },
+    {
+      "name": "Type de batterie",
+      "systemName": "custom0batterytype",
+      "count": 6,
+      "filters": [],
+      "isMultiSelect": true,
+      "order": 10,
+      "facetDefinition": null
+    },
+    {
+      "name": "Catégories",
+      "systemName": "category",
+      "count": 4,
+      "filters": [
+        {
+          "name": "Ordinateurs et tablettes",
+          "path": "category%3AOrdinateurs+et+tablettes",
+          "count": 174,
+          "isSelected": false
+        },
+        {
+          "name": "Articles de voyage, valises et sacs",
+          "path": "category%3AArticles+de+voyage%2C+valises+et+sacs",
+          "count": 9,
+          "isSelected": false
+        },
+        {
+          "name": "Téléphones cellulaires, forfaits et accessoires",
+          "path": "category%3AT%C3%A9l%C3%A9phones+cellulaires%2C+forfaits+et+accessoires",
+          "count": 5,
+          "isSelected": false
+        },
+        {
+          "name": "Plus de produits de la Place de marché Best Buy",
+          "path": "category%3APlus+de+produits+de+la+Place+de+march%C3%A9+Best+Buy",
+          "count": 2,
+          "isSelected": false
+        }
+      ],
+      "isMultiSelect": false,
+      "order": 11,
+      "facetDefinition": null
+    }
+  ],
+  "lastSearchDate": "2026-09-09T07:08:36.967312305",
+  "relatedQueries": null,
+  "sscs": null,
+  "relatedCategories": null,
+  "selectedFacets": [],
+  "resources": null,
+  "redirectUrl": null,
+  "promotions": null,
+  "hasBrandStore": false,
+  "productStatusCode": null,
+  "sscStatusCode": null,
+  "quickRefinement": {
+    "facets": [
+      "brandName",
+      "currentoffers0enrchstring"
+    ],
+    "facetValues": [
+      "En stock",
+      "soldandshippedby0enrchstring:Best Buy",
+      "currentoffers0enrchstring:En solde"
+    ],
+    "categories": []
+  },
+  "Brand": "BestBuyCanada",
+  "breadcrumb": null,
+  "abTestGroupId": null,
+  "abTestId": null,
+  "indexName": "prod_products_fr",
+  "neuralSlotCount": 23,
+  "queryId": "2cf7622e4ed5c348f2a3895e2eb02db5"
+}
