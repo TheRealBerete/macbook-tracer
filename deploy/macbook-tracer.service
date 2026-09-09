@@ -1,0 +1,28 @@
+[Unit]
+Description=MacBook Price Watcher Bot (Best Buy Canada)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=macbot
+Group=macbot
+WorkingDirectory=/opt/macbook-tracer
+ExecStart=/opt/macbook-tracer/.venv/bin/python -m bot watch
+Restart=always
+RestartSec=30
+
+# Arrêt propre : systemd envoie SIGTERM, le bot le capte (voir bot/scheduler.py)
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Durcissement (defense in depth)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/macbook-tracer
+# .env chargé par l'application elle-même (python-dotenv), pas par systemd
+
+[Install]
+WantedBy=multi-user.target
