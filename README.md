@@ -16,7 +16,8 @@ baisses significatives et envoie une alerte **Telegram**. Budget cible : 2 000 $
 | 3 | Alertes Telegram | ✅ fait |
 | 4 | Ordonnanceur + alerte de panne + logs | ✅ fait |
 | 6 | Module de découverte Open Box | ✅ fait |
-| 5 | Déploiement (Docker / Dokploy) | ✅ fichiers prêts — voir `docs/deploy.md` |
+| 5 | Déploiement (Docker / Dokploy) | ✅ en prod |
+| 7 | Commandes Telegram (F9) | ✅ fait |
 
 ## Installation
 
@@ -76,6 +77,26 @@ Best Buy, filtrée sur puce Apple Silicon (M1–M4), prix entre `DISCOVERY_MIN_P
 `DISCOVERY_MAX_PRICE`, en promo (≥ `DISCOVERY_MIN_DISCOUNT_PCT`) ou boîte ouverte.
 Le reconditionné est exclu par défaut (`DISCOVERY_INCLUDE_REFURBISHED=false`).
 
+### Commandes Telegram
+
+Quand `watch` tourne et que Telegram est configuré, le bot écoute aussi les
+commandes (long-polling, aucun port à ouvrir). Seul le `TELEGRAM_CHAT_ID`
+autorisé est pris en compte.
+
+| Commande | Effet |
+|----------|-------|
+| `/list` | Affiche la watchlist |
+| `/add <web_code> <prix> [nom]` | Ajoute un produit (vérifie qu'il existe sur Best Buy) |
+| `/remove <web_code>` | Retire un produit |
+| `/setprice <web_code> <prix>` | Change le seuil d'alerte |
+| `/check <web_code>` | Prix actuel d'un produit, sans l'ajouter |
+| `/run` | Force un cycle tout de suite |
+| `/status` | Watchlist, intervalle, âge du dernier cycle |
+| `/help` | Liste les commandes |
+
+Les ajouts/retraits sont écrits dans `DATA_DIR/targets.json` (le volume en prod)
+→ ils survivent aux redéploiements.
+
 ## Tests
 
 ```bash
@@ -115,7 +136,8 @@ bot/
   telegram.py      Envoi Telegram (POST sendMessage)
   format.py        Mise en forme HTML des alertes
   runner.py        full_cycle() = watchlist + découverte
-  scheduler.py     watch() = APScheduler + heartbeat
+  scheduler.py     watch() = APScheduler (cycles) + écoute des commandes
+  commands.py      Commandes Telegram (/add, /list, /run...)
   __main__.py      CLI (python -m bot ...)
 docs/
   bestbuy-api.md   Référence des endpoints Best Buy

@@ -11,6 +11,7 @@ services:
     image: macbook-tracer:latest
     restart: unless-stopped
     init: true                      # tini : bonne gestion de SIGTERM / des zombies
+    stop_grace_period: 30s          # laisse finir un long-poll Telegram en cours
 
     env_file:
       - path: .env

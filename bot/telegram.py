@@ -91,3 +91,31 @@ class TelegramNotifier:
         if response.status_code != 200:
             raise TelegramError(f"token invalide ? HTTP {response.status_code}")
         return response.json().get("result", {}).get("username", "?")
+
+    def get_updates(self, offset: int | None = None, *, timeout: int = 15) -> list[dict]:
+        """Long-polling : récupère les nouveaux messages reçus par le bot.
+
+        `timeout` = combien de secondes Telegram garde la connexion ouverte s'il
+        n'y a rien (0 = réponse immédiate). `offset` = update_id à partir duquel
+        lire (accuser réception des précédents).
+        """
+        params: dict[str, int] = {"timeout": timeout}
+        if offset is not None:
+            params["offset"] = offset
+        try:
+            response = self._client.get(
+                f"{self._base}/getUpdates", params=params, timeout=timeout + 10
+            )
+        except httpx.HTTPError as exc:
+            raise TelegramError(f"getUpdates : {exc}") from exc
+        if response.status_code != 200:
+            raise TelegramError(f"getUpdates HTTP {response.status_code}")
+        return response.json().get("result", [])
+
+    def set_my_commands(self, commands: list[tuple[str, str]]) -> None:
+        """Déclare le menu de commandes (autocomplétion dans l'app Telegram)."""
+        payload = {"commands": [{"command": c, "description": d} for c, d in commands]}
+        try:
+            self._client.post(f"{self._base}/setMyCommands", json=payload)
+        except httpx.HTTPError as exc:
+            logger.warning("setMyCommands a échoué : %s", exc)

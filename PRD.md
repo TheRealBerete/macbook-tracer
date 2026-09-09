@@ -54,7 +54,7 @@ pour permettre un achat réactif, avec un budget cible de **2 000 $ CAD (hors ta
 | **Anti-spam** | État par produit ; ré-alerte seulement si nouvelle baisse ≥ `realert_delta` $, ou rappel max 1×/24 h | Sinon le bot enverrait une alerte à chaque passage tant que le prix reste bas |
 | **Open Box** | Vérifié automatiquement pour chaque produit surveillé (pas de config séparée) | Simplicité : une seule ligne de config par modèle, le bot regarde neuf + Open Box |
 | **Refurbished** | Retiré de la V1 | Best Buy Canada n'en vend quasiment pas ; ce serait une source séparée (apple.ca) |
-| **Telegram** | V1 : `POST` HTTP direct sur `api.telegram.org` (pas de librairie) | Envoyer un message = 5 lignes. `python-telegram-bot` seulement en V2 pour les commandes `/add` |
+| **Telegram** | `POST`/`GET` HTTP direct sur `api.telegram.org` (pas de librairie), envoi ET commandes (long-polling `getUpdates`) | `python-telegram-bot` (asyncio, lourde) évitée : ~200 lignes suffisent et restent synchrones comme le reste du bot |
 | **Configuration** | `.env` (secrets + réglages globaux) + `targets.json` (watchlist) | `.env` = standard pour les secrets, plat et sans dépendance lourde. La watchlist est une liste d'objets → `targets.json` (JSON natif, pas de YAML ni d'indentation piégeuse) |
 | **Stockage d'état** | `state.json` (prix courants + état d'alerte, géré par le bot) | Pas de base de données nécessaire tant qu'on ne fait pas de graphes d'historique |
 | **Proxies** | Aucun en V1 | Usage perso, 1 appel API toutes les 60 min, User-Agent réaliste : risque de blocage négligeable |
@@ -85,7 +85,7 @@ pour permettre un achat réactif, avec un budget cible de **2 000 $ CAD (hors ta
 | F6 | Suivi multi-vendeurs | Amazon Canada, Staples, Costco. |
 | F7 | Historique des prix | Migration vers SQLite + génération de graphes de tendance. |
 | F8 | Détection d'erreur de prix | Baisse > 40 % vs régulier → alerte priorité maximale, message spécifique. |
-| F9 | Commandes Telegram | Bot interactif : `/add <webcode>`, `/remove`, `/list`, `/setprice`. Nécessite `python-telegram-bot`. |
+| ~~F9~~ | ~~Commandes Telegram~~ | ✅ **Fait (Sprint 7)** : `/help /list /add /remove /setprice /check /run /status` par long-polling `getUpdates` — pas de `python-telegram-bot`, pas de webhook. `bot/commands.py`. |
 | F12 | Vérification panier | Confirmer que le prix affiché = prix réel en simulant un "ajout au panier". |
 | F13 | Intervalle variable par plage de dates | Ex. 5 min pendant la semaine du Black Friday, 60 min le reste de l'année. |
 
@@ -351,5 +351,7 @@ Dernière erreur : HTTP 403 sur /api/offers/v1/...
 | 4 | `APScheduler` (F5) + `bot.log` (F11) + heartbeat | ✅ fait |
 | 5 | Déploiement Docker / Dokploy + healthcheck | ✅ `Dockerfile`, `docker-compose.yml`, `docs/deploy.md` ; déploiement à faire par l'utilisateur dans Dokploy |
 | 6 | Module de découverte Open Box (F10) | ✅ fait |
+| 7 | Commandes Telegram (F9) — long-polling `getUpdates` | ✅ fait |
 
-Code : paquet `bot/`, 57 tests. CLI `python -m bot {check,run,watch,test-telegram}`.
+Code : paquet `bot/`, 75 tests. CLI `python -m bot {check,run,watch,test-telegram,healthcheck}`.
+En prod via Dokploy.

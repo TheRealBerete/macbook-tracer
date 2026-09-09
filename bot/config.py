@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from pathlib import Path
 
 from pydantic import BaseModel, Field, field_validator
@@ -124,3 +125,26 @@ def load_targets(path: Path | str | None = None) -> list[Target]:
         seen.add(target.web_code)
 
     return targets
+
+
+def save_targets(targets: list[Target], path: Path | str | None = None) -> Path:
+    """Écrit la watchlist dans `DATA_DIR/targets.json` (écriture atomique).
+
+    Utilisé par les commandes Telegram (/add, /remove...). On écrit toujours dans
+    `DATA_DIR` : en conteneur c'est le volume, donc les modifications survivent
+    aux redéploiements (et prennent le pas sur le `targets.json` de l'image).
+    """
+    path = Path(path or DEFAULT_TARGETS_PATH)
+    payload = [t.model_dump(exclude_none=True) for t in targets]
+    text = json.dumps(payload, ensure_ascii=False, indent=2)
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
+        os.replace(tmp, path)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
+    return path
