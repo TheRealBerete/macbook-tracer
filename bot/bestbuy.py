@@ -15,11 +15,19 @@ from __future__ import annotations
 import logging
 import time
 from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
 
 import httpx
 from pydantic import ValidationError
 
 from bot.models import ConditionProduct, Offer, Product
+
+
+@dataclass
+class SearchPage:
+    products: list[Product]
+    current_page: int
+    total_pages: int
 
 logger = logging.getLogger(__name__)
 
@@ -175,6 +183,30 @@ class BestBuyClient:
             for entry in entries:
                 results.append(self._parse_model(ConditionProduct, entry, f"conditions/{sku}"))
         return results
+
+    def search(self, query: str, *, page: int = 1, page_size: int = 24) -> SearchPage:
+        """Recherche catalogue (`/api/v2/json/search`) — utilisé par la découverte (F10)."""
+        payload = self._get_json(
+            "/api/v2/json/search",
+            params={
+                "query": query,
+                "lang": self.lang,
+                "currentRegion": self.region,
+                "page": str(page),
+                "pageSize": str(page_size),
+                "sortBy": "",
+            },
+        )
+        if not isinstance(payload, dict) or "products" not in payload:
+            raise BestBuyApiError("search : champ 'products' absent de la réponse")
+        products = [
+            self._parse_model(Product, item, "search") for item in payload["products"]
+        ]
+        return SearchPage(
+            products=products,
+            current_page=int(payload.get("currentPage", page)),
+            total_pages=int(payload.get("totalPages", page)),
+        )
 
     # --- helpers de parsing -------------------------------------------------------
 

@@ -55,7 +55,10 @@ class Settings(BaseSettings):
     # --- Découverte (Sprint 6) ---
     discovery_enabled: bool = True
     discovery_max_price: float = 2000.0
+    discovery_min_price: float = 1200.0        # sous ce prix = vieux matériel, on ignore
     discovery_min_discount_pct: float = 15.0
+    discovery_apple_silicon_only: bool = True  # M1/M2/M3/M4 seulement (pas d'Intel)
+    discovery_include_refurbished: bool = False  # PRD V1 : reconditionné hors scope
 
     @property
     def telegram_ready(self) -> bool:

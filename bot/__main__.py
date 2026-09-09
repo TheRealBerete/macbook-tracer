@@ -15,7 +15,7 @@ from bot.config import Settings, load_targets
 from bot.models import Product
 from bot.logging_setup import setup_logging
 from bot.notify import send_alerts
-from bot.runner import run_once
+from bot.runner import full_cycle
 from bot.scheduler import watch
 from bot.state import StateStore
 from bot.telegram import TelegramError, TelegramNotifier
@@ -125,12 +125,13 @@ def cmd_run(*, send: bool) -> int:
         print(f"[CONFIG] {exc}", file=sys.stderr)
         return 1
 
-    print(f"Cycle : {len(targets)} produit(s) surveillé(s).")
+    disco = " + découverte" if settings.discovery_enabled else ""
+    print(f"Cycle : {len(targets)} produit(s) surveillé(s){disco}.")
     store = StateStore()
     with BestBuyClient(
         postal_code=settings.postal_code, user_agent=settings.user_agent
     ) as client:
-        alerts = run_once(client, targets, store, settings)
+        alerts = full_cycle(client, targets, store, settings)
 
     if not alerts:
         print("Aucune alerte.")

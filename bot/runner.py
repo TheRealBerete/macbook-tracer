@@ -18,9 +18,33 @@ from bot.detector import (
     register_failure,
     register_success,
 )
+from bot.discovery import discover
 from bot.state import StateStore, utcnow
 
 logger = logging.getLogger(__name__)
+
+
+def full_cycle(
+    client: BestBuyClient,
+    targets: list[Target],
+    store: StateStore,
+    settings: Settings,
+    *,
+    now: datetime | None = None,
+) -> list[Alert]:
+    """Watchlist + découverte. C'est ce qu'appellent la CLI `run` et le scheduler."""
+    now = now or utcnow()
+    alerts = run_once(client, targets, store, settings, now=now)
+
+    if settings.discovery_enabled:
+        try:
+            alerts += discover(
+                client, settings, store, [t.web_code for t in targets], now=now
+            )
+        except Exception:  # noqa: BLE001 — la découverte ne doit pas casser le cycle
+            logger.exception("Module de découverte en échec (watchlist non affectée)")
+
+    return alerts
 
 
 def run_once(

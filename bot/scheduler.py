@@ -19,7 +19,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from bot.bestbuy import BestBuyClient
 from bot.config import PROJECT_ROOT, Settings, load_targets
 from bot.notify import send_alerts
-from bot.runner import run_once
+from bot.runner import full_cycle
 from bot.state import StateStore
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ def run_cycle(settings: Settings) -> None:
         with BestBuyClient(
             postal_code=settings.postal_code, user_agent=settings.user_agent
         ) as client:
-            alerts = run_once(client, targets, store, settings)
+            alerts = full_cycle(client, targets, store, settings)
 
         sent = send_alerts(alerts, settings) if alerts else 0
         logger.info(

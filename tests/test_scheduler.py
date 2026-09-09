@@ -13,7 +13,7 @@ def test_run_cycle_writes_heartbeat(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr(scheduler, "load_targets", lambda: [])
     monkeypatch.setattr(scheduler, "StateStore", lambda: object())
     monkeypatch.setattr(scheduler, "BestBuyClient", _FakeClient)
-    monkeypatch.setattr(scheduler, "run_once", lambda *a, **k: [])
+    monkeypatch.setattr(scheduler, "full_cycle", lambda *a, **k: [])
 
     scheduler.run_cycle(Settings(_env_file="none.env"))
 
@@ -39,7 +39,7 @@ def test_run_cycle_sends_alerts(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr(scheduler, "BestBuyClient", _FakeClient)
 
     alert = Alert(kind=AlertKind.PRICE_DROP, name="x", reason="", level=AlertLevel.RED)
-    monkeypatch.setattr(scheduler, "run_once", lambda *a, **k: [alert])
+    monkeypatch.setattr(scheduler, "full_cycle", lambda *a, **k: [alert])
 
     calls: list[int] = []
     monkeypatch.setattr(scheduler, "send_alerts", lambda alerts, settings: calls.append(len(alerts)) or 1)

@@ -73,6 +73,11 @@ class Product(_ApiModel):
     hide_savings: bool = Field(default=False, alias="hideSavings")
 
     product_url: str = Field(alias="productUrl")
+    # "12746019" pour un MacBook Pro. Chemin (`catalog/.../20356`) dans catalog/query,
+    # id nu dans search / product. On teste par sous-chaîne.
+    primary_parent_category_id: str | None = Field(
+        default=None, alias="primaryParentCategoryId"
+    )
     availability: Availability | None = None
 
     @field_validator("sale_end_date", mode="before")

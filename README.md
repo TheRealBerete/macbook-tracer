@@ -15,8 +15,8 @@ baisses significatives et envoie une alerte **Telegram**. Budget cible : 2 000 $
 | 2 | Config `.env` / `targets.json` + détection + anti-spam + `state.json` | ✅ fait |
 | 3 | Alertes Telegram | ✅ fait |
 | 4 | Ordonnanceur + alerte de panne + logs | ✅ fait |
-| 5 | Déploiement VPS (`systemd`) | à venir |
-| 6 | Module de découverte Open Box | à venir |
+| 6 | Module de découverte Open Box | ✅ fait |
+| 5 | Déploiement VPS (`systemd`) | ⏳ en attente d'un VPS |
 
 ## Installation
 
@@ -70,6 +70,11 @@ python -m bot watch      # 1 cycle immédiat, puis toutes les INTERVAL_MINUTES (
 - écrit `last_run.txt` après chaque cycle réussi (heartbeat pour un moniteur externe)
 - un cycle qui plante est loggé mais n'arrête pas la boucle
 - s'arrête proprement sur Ctrl+C et sur `SIGTERM` (utilisé par `systemd` — Sprint 5)
+
+Chaque cycle inclut aussi la **découverte** (F10) : recherche « macbook pro » sur
+Best Buy, filtrée sur puce Apple Silicon (M1–M4), prix entre `DISCOVERY_MIN_PRICE` et
+`DISCOVERY_MAX_PRICE`, en promo (≥ `DISCOVERY_MIN_DISCOUNT_PCT`) ou boîte ouverte.
+Le reconditionné est exclu par défaut (`DISCOVERY_INCLUDE_REFURBISHED=false`).
 
 ## Tests
 
