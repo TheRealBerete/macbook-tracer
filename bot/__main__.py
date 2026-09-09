@@ -177,6 +177,28 @@ def cmd_test_telegram() -> int:
     return 0
 
 
+def cmd_healthcheck(max_age_minutes: int) -> int:
+    """Exit 0 si le bot a fait un cycle récemment, 1 sinon.
+
+    Utilisé par le HEALTHCHECK Docker et par un moniteur externe.
+    """
+    import time
+
+    from bot.scheduler import HEARTBEAT_PATH
+
+    if not HEARTBEAT_PATH.exists():
+        print(f"KO : pas de heartbeat ({HEARTBEAT_PATH})", file=sys.stderr)
+        return 1
+
+    age_min = (time.time() - HEARTBEAT_PATH.stat().st_mtime) / 60
+    if age_min > max_age_minutes:
+        print(f"KO : dernier cycle il y a {age_min:.0f} min (> {max_age_minutes})", file=sys.stderr)
+        return 1
+
+    print(f"OK : dernier cycle il y a {age_min:.0f} min")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="bot", description="MacBook Price Watcher Bot")
     parser.add_argument(
@@ -200,6 +222,9 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("test-telegram", help="envoie un message de test sur Telegram")
     sub.add_parser("watch", help="exécution périodique (cycle immédiat puis toutes les X min)")
 
+    hc = sub.add_parser("healthcheck", help="exit 0 si un cycle a eu lieu récemment")
+    hc.add_argument("--max-age", type=int, default=180, help="âge max en minutes (défaut 180)")
+
     args = parser.parse_args(argv)
     # `check` reste léger (console) ; `watch` écrit aussi dans bot.log
     setup_logging(verbose=args.verbose, to_file=(args.command == "watch"))
@@ -210,6 +235,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_run(send=not args.no_send)
     if args.command == "test-telegram":
         return cmd_test_telegram()
+    if args.command == "healthcheck":
+        return cmd_healthcheck(args.max_age)
     if args.command == "watch":
         try:
             watch()

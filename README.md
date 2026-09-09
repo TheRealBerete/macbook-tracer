@@ -16,7 +16,7 @@ baisses significatives et envoie une alerte **Telegram**. Budget cible : 2 000 $
 | 3 | Alertes Telegram | ✅ fait |
 | 4 | Ordonnanceur + alerte de panne + logs | ✅ fait |
 | 6 | Module de découverte Open Box | ✅ fait |
-| 5 | Déploiement VPS (`systemd`) | ⏳ en attente d'un VPS |
+| 5 | Déploiement (Docker / Dokploy) | ✅ fichiers prêts — voir `docs/deploy.md` |
 
 ## Installation
 
@@ -69,7 +69,7 @@ python -m bot watch      # 1 cycle immédiat, puis toutes les INTERVAL_MINUTES (
 - écrit dans `bot.log` (rotation : 5 × 1 Mo)
 - écrit `last_run.txt` après chaque cycle réussi (heartbeat pour un moniteur externe)
 - un cycle qui plante est loggé mais n'arrête pas la boucle
-- s'arrête proprement sur Ctrl+C et sur `SIGTERM` (utilisé par `systemd` — Sprint 5)
+- s'arrête proprement sur Ctrl+C et sur `SIGTERM` (utilisé par Docker / Dokploy)
 
 Chaque cycle inclut aussi la **découverte** (F10) : recherche « macbook pro » sur
 Best Buy, filtrée sur puce Apple Silicon (M1–M4), prix entre `DISCOVERY_MIN_PRICE` et
@@ -85,15 +85,42 @@ pytest
 Les tests utilisent des réponses figées (`tests/fixtures/`, capturées depuis le vrai
 site) — **aucun appel réseau**.
 
+## Déploiement
+
+Via **Dokploy** (app type *Compose*) — procédure complète dans
+[`docs/deploy.md`](docs/deploy.md). En résumé :
+
+- `Dockerfile` : image slim, user non-root, `HEALTHCHECK` = `python -m bot healthcheck`
+- `docker-compose.yml` : volume `macbook_data:/data` pour persister `state.json`
+- secrets renseignés dans l'onglet *Environment* de Dokploy (jamais commités)
+
+Test local de l'image :
+
+```bash
+docker compose build
+docker compose run --rm bot python -m bot run
+docker compose up -d && docker compose logs -f
+```
+
 ## Structure
 
 ```
 bot/
-  bestbuy.py     Client de l'API Best Buy (retry, backoff)
-  models.py      Modèles pydantic = contrat sur les réponses API
-  __main__.py    CLI (python -m bot ...)
+  bestbuy.py       Client de l'API Best Buy (retry, backoff, search)
+  models.py        Modèles pydantic = contrat sur les réponses API
+  config.py        Settings (.env) + Target + load_targets
+  state.py         state.json (écriture atomique)
+  detector.py      Déclenchement + anti-spam + alerte de panne
+  discovery.py     Module de découverte Open Box (F10)
+  telegram.py      Envoi Telegram (POST sendMessage)
+  format.py        Mise en forme HTML des alertes
+  runner.py        full_cycle() = watchlist + découverte
+  scheduler.py     watch() = APScheduler + heartbeat
+  __main__.py      CLI (python -m bot ...)
 docs/
-  bestbuy-api.md Référence des endpoints
+  bestbuy-api.md   Référence des endpoints Best Buy
+  deploy.md        Déploiement Dokploy
 tests/
-  fixtures/      Réponses JSON réelles figées
+  fixtures/        Réponses JSON réelles figées
+Dockerfile · docker-compose.yml
 ```

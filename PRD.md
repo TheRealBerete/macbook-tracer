@@ -43,8 +43,8 @@ pour permettre un achat réactif, avec un budget cible de **2 000 $ CAD (hors ta
 | Sujet | Décision | Pourquoi |
 |---|---|---|
 | **Langage** | Python 3.10+ | Écosystème scraping / HTTP / scheduling mature |
-| **Hébergement** | VPS Linux (Oracle Cloud Free Tier ou Hetzner ~5 €/mois) | Doit tourner 24/7, surtout le matin de Black Friday. Un laptop ou GitHub Actions ne garantit pas ça |
-| **Exécution** | Process Python long-running + `APScheduler`, supervisé par `systemd` | `systemd` redémarre le bot s'il crash ; pas de dépendance à cron |
+| **Hébergement** | Conteneur Docker déployé via **Dokploy** (sur le serveur de l'utilisateur) | Doit tourner 24/7, surtout le matin de Black Friday. L'utilisateur gère déjà ses déploiements avec Dokploy |
+| **Exécution** | Process Python long-running + `APScheduler` dans le conteneur ; `restart: unless-stopped` + `HEALTHCHECK` Docker | Redémarre si crash ou reboot ; heartbeat `last_run.txt` pour détecter un bot figé |
 | **Intervalle** | 60 min par défaut, configurable (`interval_minutes`) | Compromis réactivité / risque de blocage. Le délai de détection reste sous le KPI |
 | **Extraction** | API JSON interne de Best Buy (`bestbuy.ca/api/...`) | Best Buy est une SPA React : le prix n'est pas dans le HTML brut. L'API renvoie du JSON propre (prix, prix régulier, dispo, vendeur, Open Box). Pas de navigateur headless à maintenir |
 | **Fallback extraction** | Aucun en V1 ; à la place, **alerte de panne** si l'API casse | Playwright = lourd (Chromium, RAM, lenteur). On l'ajoutera seulement si l'API se ferme |
@@ -135,13 +135,14 @@ pour permettre un achat réactif, avec un budget cible de **2 000 $ CAD (hors ta
 | Langage | Python 3.10+ | |
 | Requêtes HTTP | `httpx` (ou `requests`) | `httpx` gère HTTP/2 et les timeouts proprement |
 | Parsing | `json` (stdlib) | Pas de HTML à parser grâce à l'API |
-| Ordonnanceur | `APScheduler` | `BackgroundScheduler`, un seul job périodique |
-| Config / secrets | `.env` + `python-dotenv` | Réglages globaux et secrets, chargés en variables d'environnement |
+| Ordonnanceur | `APScheduler` | `BlockingScheduler`, un seul job périodique (`max_instances=1`, `coalesce`) |
+| Config / secrets | `.env` + `pydantic-settings` (local) / variables d'env injectées par Dokploy (prod) | Même code lit les deux ; `DATA_DIR` pointe vers un volume en conteneur |
 | Watchlist | `targets.json` + `json` (stdlib) | Liste de produits ; aucune dépendance |
 | Alertes | `httpx` → `api.telegram.org/bot<token>/sendMessage` | Pas de librairie Telegram en V1 |
 | Validation config | `pydantic` v2 (`BaseSettings` pour le `.env`, `BaseModel` pour `targets.json`) | Vérifie au démarrage que tout est bien typé ; message d'erreur clair sinon |
-| Supervision | `systemd` service (sur le VPS) | `Restart=always` |
-| Secrets | `TELEGRAM_BOT_TOKEN` dans `.env` uniquement (non commité) | `.gitignore` : `.env`, `state.json`, `bot.log` |
+| Déploiement | Docker + Dokploy (app *Compose*) | `Dockerfile` slim non-root, `docker-compose.yml` avec volume `macbook_data:/data` |
+| Supervision | `restart: unless-stopped` + `HEALTHCHECK` Docker (`python -m bot healthcheck`) | Conteneur marqué *unhealthy* si aucun cycle depuis 3 h |
+| Secrets | Variables d'env Dokploy (prod) / `.env` non commité (local) | `.gitignore` + `.dockerignore` : `.env`, `state.json`, `bot.log`, `*.har` |
 
 ### 6.3. Endpoints Best Buy (Sprint 0 — confirmés via capture HAR du 2026-09-09)
 
@@ -304,9 +305,9 @@ Dernière erreur : HTTP 403 sur /api/offers/v1/...
 | Risque | Impact | Mitigation retenue |
 |--------|--------|--------------------|
 | L'API interne change de forme / se ferme | Élevé | F2c (alerte de panne) + `bot.log`. Playdev Playwright reste une option V2 |
-| Blocage IP (403 / CAPTCHA) | Moyen | Intervalle 60 min, User-Agent réaliste, délai aléatoire entre appels, 1 seule IP VPS. Pas de proxies tant que non nécessaire |
+| Blocage IP (403 / CAPTCHA) | Moyen | Intervalle 60 min, User-Agent réaliste, `catalog/query` en lot, backoff exponentiel. Pas de proxies tant que non nécessaire |
 | Prix affiché ≠ prix au panier | Moyen | Accepté en V1 (faux positif rare). F12 en V2 |
-| VPS down | Moyen | `systemd Restart=always` + healthcheck : si aucun cycle réussi depuis 3 h, alerte |
+| Conteneur down | Moyen | `restart: unless-stopped` + `HEALTHCHECK` Docker + heartbeat `last_run.txt` (notif Dokploy possible) |
 | Fuite du token Telegram | Moyen (spam du bot) | Token dans `.env`, jamais commité, `.gitignore` strict |
 | `state.json` corrompu | Faible | Écriture atomique (fichier temp + `os.replace`), sauvegarde du précédent |
 
@@ -331,7 +332,7 @@ Dernière erreur : HTTP 403 sur /api/offers/v1/...
 2. **Filtre `categoryid` sur `/search`** : confirmer qu'il fonctionne (sinon découverte
    par `query=macbook pro` paginé) — Sprint 6.
 3. **`sortBy` de `/search`** : valeurs exactes (`priceLowToHigh` ?) — Sprint 6.
-4. **Healthcheck VPS** : simple log + alerte, ou monitoring externe (UptimeRobot) ?
+4. ~~Healthcheck~~ → `HEALTHCHECK` Docker + `python -m bot healthcheck` (heartbeat `last_run.txt`). Reste : brancher une notification Dokploy sur *unhealthy*.
 5. **Produits en rupture** : alerter quand un produit surveillé redevient disponible ?
    (proposé : oui, alerte 🔵 « de retour en stock », via `availability.buttonState`).
 6. **Comparaison boîte ouverte** : `lowest_ever` seul, ou aussi vs prix du neuf équivalent
@@ -348,7 +349,7 @@ Dernière erreur : HTTP 403 sur /api/offers/v1/...
 | 2 | `.env` + `targets.json` + `state.json` + watchlist + logique F2 / F2b / F2c | ✅ fait |
 | 3 | Envoi Telegram (F3) + formatage des messages + niveaux visuels | ✅ fait (test live à faire par l'utilisateur) |
 | 4 | `APScheduler` (F5) + `bot.log` (F11) + heartbeat | ✅ fait |
-| 5 | Déploiement VPS + `systemd` + healthcheck | ⏳ artefacts prêts (`deploy/`, `docs/deploy.md`), exécution par l'utilisateur |
+| 5 | Déploiement Docker / Dokploy + healthcheck | ✅ `Dockerfile`, `docker-compose.yml`, `docs/deploy.md` ; déploiement à faire par l'utilisateur dans Dokploy |
 | 6 | Module de découverte Open Box (F10) | ✅ fait |
 
 Code : paquet `bot/`, 57 tests. CLI `python -m bot {check,run,watch,test-telegram}`.

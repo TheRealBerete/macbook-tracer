@@ -13,9 +13,9 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from bot.config import PROJECT_ROOT
+from bot.config import DATA_DIR
 
-LOG_PATH = PROJECT_ROOT / "bot.log"
+LOG_PATH = DATA_DIR / "bot.log"
 _FORMAT = "%(asctime)s %(levelname)-7s %(name)s: %(message)s"
 
 

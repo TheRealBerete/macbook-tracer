@@ -1,0 +1,33 @@
+# Déploiement via Dokploy (type d'application : "Compose").
+# Dokploy clone le repo, construit l'image et lance ce compose.
+#
+# Les variables d'environnement (TELEGRAM_BOT_TOKEN, etc.) se renseignent dans
+# l'onglet "Environment" de Dokploy — il les écrit dans un fichier .env à côté
+# de ce compose, que `env_file` ci-dessous charge dans le conteneur.
+
+services:
+  bot:
+    build: .
+    image: macbook-tracer:latest
+    restart: unless-stopped
+    init: true                      # tini : bonne gestion de SIGTERM / des zombies
+
+    env_file:
+      - path: .env
+        required: false             # pas bloquant en local si .env absent
+
+    environment:
+      DATA_DIR: /data
+
+    volumes:
+      - macbook_data:/data          # persiste state.json / bot.log / last_run.txt
+
+    # Journaux Docker plafonnés (bot.log a déjà sa propre rotation dans /data)
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  macbook_data:

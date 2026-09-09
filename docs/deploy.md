@@ -1,106 +1,108 @@
-# Déploiement sur VPS (Sprint 5)
+# Déploiement via Dokploy (Sprint 5)
 
-Cible : un petit VPS Linux (Debian 12 / Ubuntu 24.04). Le bot tourne en continu
-comme service `systemd`, redémarre tout seul en cas de crash ou de reboot.
+Le bot est un **worker** (aucun port HTTP) : dans Dokploy on crée une application
+de type **Compose**, pas "Application".
 
-Ressources nécessaires : minuscules (~60 Mo RAM, ~0 CPU). Un **Oracle Cloud
-Always Free** (VM.Standard.A1 ou E2.1.Micro) ou le plus petit **Hetzner CX22**
-(~4 €/mois) suffisent largement.
+Fichiers concernés : `Dockerfile`, `docker-compose.yml`, `.dockerignore`.
 
 ---
 
-## 1. Préparer le VPS
+## 1. Pousser le code
+
+Le repo doit être accessible par Dokploy (GitHub/GitLab, ou dépôt Git self-hosted).
 
 ```bash
-# en root
-apt update && apt install -y python3-venv git
-
-# utilisateur dédié, sans shell de login, sans privilèges
-adduser --system --group --home /opt/macbook-tracer macbot
+git push origin main
 ```
 
-🧠 **Concept — utilisateur de service**
-On ne fait jamais tourner un daemon en `root`. Un compte dédié sans privilèges
-limite les dégâts si le process est compromis (même logique qu'un conteneur non-root).
+## 2. Créer l'application dans Dokploy
 
-## 2. Récupérer le code
+1. **Create Application → Compose**
+2. **Provider** : ton repo Git, branche `main`
+3. **Compose Path** : `docker-compose.yml`
+
+## 3. Renseigner les variables d'environnement
+
+Onglet **Environment** de l'app Dokploy — coller (au minimum) :
+
+```dotenv
+TELEGRAM_BOT_TOKEN=123456:ABC-...
+TELEGRAM_CHAT_ID=123456789
+POSTAL_CODE=M6N 5G8
+INTERVAL_MINUTES=60
+TAX_RATE=0.13
+```
+
+Toutes les autres clés ont des valeurs par défaut raisonnables (voir `.env.example`).
+Dokploy écrit ces variables dans un `.env` que `docker-compose.yml` charge dans le conteneur.
+
+🧠 **Concept — variables d'environnement vs fichier**
+En conteneur, on ne commite jamais les secrets. Dokploy les injecte au runtime ;
+`pydantic-settings` (`bot/config.py`) les lit directement depuis l'environnement,
+exactement comme il lirait un `.env` en local. Même code, deux sources.
+
+## 4. Déployer
+
+Bouton **Deploy**. Dokploy build l'image (`Dockerfile`) et lance le conteneur.
+
+Vérifs :
+- onglet **Logs** : tu dois voir `Cycle terminé : N produit(s), ...`
+- le conteneur passe **healthy** après le 1er cycle (le `HEALTHCHECK` du Dockerfile
+  lit `last_run.txt` via `python -m bot healthcheck`)
+
+Les redéploiements suivants sont automatiques à chaque `git push` (si l'auto-deploy
+est activé) ou manuels via **Deploy**.
+
+## 5. Persistance
+
+Le volume nommé `macbook_data` (déclaré dans `docker-compose.yml`) est monté sur
+`/data` et contient `state.json`, `bot.log`, `last_run.txt`. Il **survit aux
+redéploiements** — l'historique des prix et l'anti-spam ne repartent pas de zéro.
+
+⚠️ Ne pas supprimer ce volume dans Dokploy, sinon `lowest_ever` et l'état d'alerte
+sont perdus (le bot re-signalera tout au cycle suivant).
+
+## 6. Modifier la watchlist
+
+`targets.json` est embarqué dans l'image. Pour le changer :
 
 ```bash
-cd /opt
-git clone <URL_DU_DEPOT> macbook-tracer   # ou : rsync depuis ta machine
-chown -R macbot:macbot /opt/macbook-tracer
-cd macbook-tracer
-
-# venv + dépendances (en tant que macbot)
-sudo -u macbot python3 -m venv .venv
-sudo -u macbot .venv/bin/pip install -r requirements.txt
+# éditer targets.json en local
+git commit -am "watchlist: ajoute MacBook Pro 14 M4"
+git push
 ```
+→ Dokploy redéploie avec la nouvelle liste. L'état des SKU déjà suivis est conservé
+(clé = web_code, stockée dans le volume).
 
-## 3. Configurer
+## 7. Surveillance externe (recommandé)
 
-```bash
-sudo -u macbot cp .env.example .env
-sudo -u macbot nano .env        # remplir TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, POSTAL_CODE...
-sudo -u macbot nano targets.json  # la watchlist
+Le `HEALTHCHECK` Docker rend le conteneur "unhealthy" si le bot se fige, mais il
+faut encore être prévenu. Deux options :
 
-# vérifier que Telegram répond
-sudo -u macbot .venv/bin/python -m bot test-telegram
-
-# un cycle manuel pour valider
-sudo -u macbot .venv/bin/python -m bot run
-```
-
-Permissions : `chmod 600 .env` (lisible seulement par `macbot`).
-
-## 4. Installer le service systemd
-
-```bash
-cp deploy/macbook-tracer.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl enable --now macbook-tracer
-
-# vérifier
-systemctl status macbook-tracer
-journalctl -u macbook-tracer -f       # logs en direct
-```
-
-💡 `systemctl enable --now` : `enable` = démarrage auto au boot ;
-`--now` = démarre aussi tout de suite.
-
-## 5. Surveillance du bot lui-même (optionnel mais recommandé)
-
-Le bot écrit `last_run.txt` après chaque cycle réussi. `deploy/healthcheck.sh`
-vérifie que ce fichier est récent.
-
-Créer un check "heartbeat" gratuit sur [healthchecks.io](https://healthchecks.io)
-ou UptimeRobot, puis :
-
-```bash
-chmod +x deploy/healthcheck.sh
-crontab -u macbot -e
-```
-```cron
-*/30 * * * * /opt/macbook-tracer/deploy/healthcheck.sh >/dev/null 2>&1 && curl -fsS https://hc-ping.com/<TON-UUID> >/dev/null
-```
-
-Si le bot se fige, le ping s'arrête → le service de monitoring t'alerte par email.
-(L'alerte de panne F2c couvre les erreurs d'API ; ce healthcheck couvre le cas où
-tout le process est mort.)
-
-## 6. Mises à jour
-
-```bash
-cd /opt/macbook-tracer
-sudo -u macbot git pull
-sudo -u macbot .venv/bin/pip install -r requirements.txt
-systemctl restart macbook-tracer
-```
+- **Dokploy Notifications** (Discord/Telegram/email) sur l'événement conteneur unhealthy.
+- **healthchecks.io** (dead man's switch) : créer un check, puis dans l'app Dokploy
+  ajouter une commande périodique, ou plus simple, laisser l'alerte de panne **F2c**
+  du bot faire le travail pour les erreurs d'API (elle, elle passe par Telegram).
 
 ## Dépannage
 
 | Symptôme | Piste |
 |----------|-------|
-| `systemctl status` = failed | `journalctl -u macbook-tracer -n 50` |
-| Aucune alerte jamais | `.env` bien rempli ? `python -m bot run` en manuel |
-| HTTP 403 dans `bot.log` | Akamai a tiqué : augmenter `INTERVAL_MINUTES`, vérifier `USER_AGENT` |
-| Le bot ne redémarre pas au reboot | `systemctl is-enabled macbook-tracer` doit dire `enabled` |
+| Build échoue | Logs de build Dokploy ; tester `docker build .` en local |
+| Conteneur "unhealthy" | Logs : le 1er cycle a-t-il tourné ? `start-period` = 3 min |
+| Aucune alerte jamais | Variables Telegram bien dans l'onglet Environment ? |
+| `HTTP 403` dans les logs | Akamai : augmenter `INTERVAL_MINUTES` |
+| État perdu après redéploiement | Le volume `macbook_data` a-t-il été supprimé ? |
+
+---
+
+## Test local de l'image (avant de pousser)
+
+```bash
+docker compose build
+echo "TELEGRAM_BOT_TOKEN=..." > .env
+echo "TELEGRAM_CHAT_ID=..." >> .env
+docker compose run --rm bot python -m bot run     # un cycle
+docker compose up -d                              # en continu
+docker compose logs -f
+```

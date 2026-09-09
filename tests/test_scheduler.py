@@ -52,3 +52,21 @@ class _FakeClient:
     def __init__(self, *a, **k): ...
     def __enter__(self): return self
     def __exit__(self, *a): ...
+
+
+def test_healthcheck_cli(monkeypatch, tmp_path) -> None:
+    import bot.scheduler as sched
+    from bot.__main__ import cmd_healthcheck
+
+    hb = tmp_path / "last_run.txt"
+    monkeypatch.setattr(sched, "HEARTBEAT_PATH", hb)
+
+    assert cmd_healthcheck(180) == 1        # pas de fichier
+
+    hb.write_text("x", encoding="utf-8")
+    assert cmd_healthcheck(180) == 0        # frais
+
+    import os
+    old = tmp_path.stat().st_mtime - 4 * 3600
+    os.utime(hb, (old, old))
+    assert cmd_healthcheck(180) == 1        # trop vieux (4 h > 3 h)

@@ -17,14 +17,14 @@ from datetime import datetime, timezone
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from bot.bestbuy import BestBuyClient
-from bot.config import PROJECT_ROOT, Settings, load_targets
+from bot.config import DATA_DIR, Settings, load_targets
 from bot.notify import send_alerts
 from bot.runner import full_cycle
 from bot.state import StateStore
 
 logger = logging.getLogger(__name__)
 
-HEARTBEAT_PATH = PROJECT_ROOT / "last_run.txt"
+HEARTBEAT_PATH = DATA_DIR / "last_run.txt"
 
 
 def run_cycle(settings: Settings) -> None:

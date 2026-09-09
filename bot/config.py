@@ -11,14 +11,21 @@ claire tout de suite, pas au milieu d'un cycle à 3h du matin.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_TARGETS_PATH = PROJECT_ROOT / "targets.json"
-DEFAULT_STATE_PATH = PROJECT_ROOT / "state.json"
+
+# Dossier des données mutables (state.json, bot.log, last_run.txt, targets.json).
+# En local : la racine du projet. En conteneur : un volume monté (DATA_DIR=/data)
+# pour que l'état survive aux redéploiements.
+DATA_DIR = Path(os.environ.get("DATA_DIR", PROJECT_ROOT))
+
+DEFAULT_TARGETS_PATH = DATA_DIR / "targets.json"
+DEFAULT_STATE_PATH = DATA_DIR / "state.json"
 
 
 class Settings(BaseSettings):
@@ -88,8 +95,18 @@ class Target(BaseModel):
         return settings.default_min_discount_pct
 
 
-def load_targets(path: Path | str = DEFAULT_TARGETS_PATH) -> list[Target]:
-    """Lit et valide `targets.json`. Lève une erreur si le fichier est absent/invalide."""
+def load_targets(path: Path | str | None = None) -> list[Target]:
+    """Lit et valide `targets.json`. Lève une erreur si le fichier est absent/invalide.
+
+    Ordre de recherche si `path` n'est pas fourni :
+    1. `DATA_DIR/targets.json` (volume monté en conteneur) ;
+    2. `PROJECT_ROOT/targets.json` (celui embarqué dans l'image / le repo).
+    """
+    if path is None:
+        path = DEFAULT_TARGETS_PATH
+        if not Path(path).exists() and (PROJECT_ROOT / "targets.json").exists():
+            path = PROJECT_ROOT / "targets.json"
+
     path = Path(path)
     if not path.exists():
         raise FileNotFoundError(f"Watchlist introuvable : {path} (copie/renseigne targets.json)")
