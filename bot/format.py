@@ -44,7 +44,12 @@ def _format_price(alert: Alert) -> str:
         header = f"{badge}💎 <b>PÉPITE DÉTECTÉE</b>"
 
     lines = [header, "", f"📦 {_esc(alert.name)}"]
-    if alert.extra.get("variant_of"):
+    if alert.extra.get("config_diff"):
+        lines.append(
+            f"🔁 Même famille, <b>autre config</b> ({_esc(alert.extra['config_diff'])}) "
+            f"que : <i>{_esc(alert.extra['variant_of'])}</i>"
+        )
+    elif alert.extra.get("variant_of"):
         lines.append(f"🔁 Autre état de : <i>{_esc(alert.extra['variant_of'])}</i>")
     if alert.specs:
         warn = "  ⚠️ <i>specs à vérifier</i>" if alert.specs_unverified else ""

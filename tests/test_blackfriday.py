@@ -233,3 +233,45 @@ def test_history_records_changes_only(tmp_path) -> None:
     store.save()
     reloaded = StateStore(tmp_path / "s.json").get("1")
     assert [p for _, p in reloaded.history] == [2199, 1999, 1899]
+
+
+# --- variantes : filtre specs + libellé de config différente ------------------------
+
+
+def _conditions_client(variants: list[dict]) -> BestBuyClient:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/conditions"):
+            return httpx.Response(200, json={"alternateConditionProducts": {"x": variants}})
+        return httpx.Response(404)
+
+    return BestBuyClient(client=httpx.Client(
+        base_url="https://www.bestbuy.ca", transport=httpx.MockTransport(handler)))
+
+
+def _variant(sku: str, title: str, sale: float, regular: float = 2399.99) -> dict:
+    return {"sku": sku, "title": title, "productCondition": "Remis à neuf (Bon état)",
+            "regularPrice": regular, "salePrice": sale, "productUrl": f"/p/{sku}",
+            "sellerName": "Openbox Electronics"}
+
+
+def test_variants_filtered_by_specs_and_config_diff_labelled(tmp_path) -> None:
+    from bot.runner import _check_variants
+
+    client = _conditions_client([
+        _variant("V512", "Remis à neuf (bon état) - MacBook Pro 14 po (M5 d'Apple/RAM d'16 Go/SSD d'512 Go)", 1899.99),
+        _variant("V8GB", "Remis à neuf - MacBook Pro 14 po (M5 d'Apple/RAM 8 Go/SSD 512 Go)", 1499.99),
+        _variant("V1TO", "Boîte ouverte - MacBook Pro 14 po (M5 d'Apple/RAM 16 Go/SSD 1 To)", 1999.0),
+    ])
+    store = StateStore(tmp_path / "s.json")
+    store.get("WWW").describe(name="MacBook Pro 14 po (M5 d'Apple/RAM 16 Go/SSD 1 To) - Nouveau", url=None)
+    target = Target(name="MBP M5 1 To", web_code="WWW", alert_price=2000)
+    now = datetime(2026, 11, 3, tzinfo=timezone.utc)
+
+    alerts = _check_variants(client, target, store, SETTINGS, now, watchlist={"WWW"}, variant_skus=set())
+    by_sku = {a.sku: a for a in alerts}
+
+    assert set(by_sku) == {"V512", "V1TO"}                 # la 8 Go est écartée
+    assert by_sku["V512"].extra["config_diff"] == "SSD 512 Go au lieu de 1 To"
+    assert "autre config" in format_alert(by_sku["V512"])
+    assert "config_diff" not in by_sku["V1TO"].extra
+    assert "Autre état de" in format_alert(by_sku["V1TO"])

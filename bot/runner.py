@@ -14,6 +14,7 @@ from bot.alerts import Alert, AlertKind, level_for
 from bot.bestbuy import BestBuyApiError, BestBuyClient
 from bot.config import Settings, Target
 from bot.criteria import check_specs
+from bot.models import specs_from_text
 from bot.detector import (
     evaluate_stock,
     evaluate_target,
@@ -146,6 +147,26 @@ def _stock_label(avail) -> str:
     return label
 
 
+def _gb(value: int) -> str:
+    return f"{value // 1024} To" if value >= 1024 and value % 1024 == 0 else f"{value} Go"
+
+
+def _variant_extra(
+    target_name: str,
+    ref: tuple[int | None, int | None],
+    got: tuple[int | None, int | None],
+) -> dict[str, str]:
+    """`variant_of` + `config_diff` (« 512 Go au lieu de 1 To ») si la config diffère."""
+    diffs = []
+    for label, ref_v, got_v in (("RAM", ref[0], got[0]), ("SSD", ref[1], got[1])):
+        if ref_v is not None and got_v is not None and ref_v != got_v:
+            diffs.append(f"{label} {_gb(got_v)} au lieu de {_gb(ref_v)}")
+    extra = {"variant_of": target_name}
+    if diffs:
+        extra["config_diff"] = ", ".join(diffs)
+    return extra
+
+
 def _check_variants(
     client: BestBuyClient,
     target: Target,
@@ -166,11 +187,26 @@ def _check_variants(
         logger.debug("variantes %s indisponibles : %s", target.web_code, exc)
         return []
 
+    # Specs du produit surveillé (nom Best Buy si connu, sinon le nom donné au /add)
+    ref_name = store.get(target.web_code).name or target.name
+    ref_ram, ref_storage = specs_from_text(ref_name)
+
     alerts: list[Alert] = []
     for variant in variants:
         if variant.sku in watchlist or variant.sku in variant_skus:
             continue
         variant_skus.add(variant.sku)
+
+        # `conditions` renvoie aussi d'autres configs du modèle (ex. 512 Go pour
+        # un 1 To surveillé) : on leur applique les minimums RAM / stockage.
+        ram, storage = specs_from_text(variant.display_name)
+        if settings.min_ram_gb and ram is not None and ram < settings.min_ram_gb:
+            logger.debug("variante %s écartée : RAM %s Go", variant.sku, ram)
+            continue
+        if settings.min_storage_gb and storage is not None and storage < settings.min_storage_gb:
+            logger.debug("variante %s écartée : stockage %s Go", variant.sku, storage)
+            continue
+        specs = check_specs(variant.display_name, settings)
 
         state = store.get(variant.sku)
         state.record_price(variant.sale_price, variant.regular_price, now=now)
@@ -216,8 +252,9 @@ def _check_variants(
                 url=variant.full_url,
                 tax_rate=settings.tax_rate,
                 budget=settings.budget,
-                specs=check_specs(variant.display_name, settings).summary,
-                extra={"variant_of": target.name},
+                specs=specs.summary,
+                specs_unverified=specs.unknown_specs,
+                extra=_variant_extra(target.name, (ref_ram, ref_storage), (ram, storage)),
             )
         )
         logger.info("VARIANTE %s (%s) à %.0f$", variant.sku, variant.condition_full, variant.sale_price)
