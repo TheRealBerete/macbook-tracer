@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 
 from bot.alerts import Alert, AlertKind, level_for
 from bot.config import Settings, Target
+from bot.criteria import check_specs
 from bot.models import Product
 from bot.state import ProductState, utcnow
 
@@ -34,6 +35,14 @@ def evaluate_target(
     price = product.sale_price
     previous_lowest = state.lowest_ever
     state.record_price(price, product.regular_price, now=now)
+    specs = check_specs(product.display_name, settings)
+    state.describe(
+        name=product.display_name,
+        url=product.full_url,
+        condition=product.condition_full,
+        specs=specs.summary,
+        source="watchlist",
+    )
 
     min_pct = target.effective_min_discount_pct(settings)
     under_budget = price <= target.alert_price
@@ -49,12 +58,17 @@ def evaluate_target(
         and price < previous_lowest
     ):
         reasons.append(f"nouveau plus bas ({price:.0f}$ < {previous_lowest:.0f}$)")
+    price_error = product.has_real_discount and product.discount_pct >= settings.price_error_pct
+    if price_error:
+        reasons.append(f"ERREUR DE PRIX probable (−{product.discount_pct:g}%)")
 
     if not reasons:
         state.rearm()
         return None
 
     allowed, why_send = _should_send(state, price, target, settings, now)
+    if price_error and state.last_alerted_price != price:
+        allowed, why_send = True, "erreur de prix : envoi prioritaire"
     if not allowed:
         return None
 
@@ -70,9 +84,40 @@ def evaluate_target(
         discount_amount=product.discount_amount,
         discount_pct=product.discount_pct,
         lowest_ever=state.lowest_ever,
-        level=level_for(product.discount_pct, under_budget=under_budget),
+        level=level_for(
+            product.discount_pct,
+            under_budget=under_budget,
+            price_error_pct=settings.price_error_pct,
+        ),
         seller=_seller_label(product),
-        condition=product.condition_label,
+        condition=product.condition_full,
+        url=product.full_url,
+        tax_rate=settings.tax_rate,
+        budget=settings.budget,
+        specs=specs.summary,
+    )
+
+
+def evaluate_stock(
+    target: Target,
+    product: Product,
+    state: ProductState,
+    is_available: bool,
+    settings: Settings,
+) -> Alert | None:
+    """Alerte 🔵 quand un produit surveillé redevient achetable (et reste dans la cible)."""
+    was = state.was_available
+    state.was_available = is_available
+    if was is not False or not is_available:
+        return None
+    if product.sale_price > target.alert_price * 1.15:
+        return None  # de retour, mais bien trop cher pour être utile
+    return Alert(
+        kind=AlertKind.BACK_IN_STOCK,
+        name=product.display_name,
+        sku=product.sku,
+        reason="de nouveau achetable en ligne",
+        price=product.sale_price,
         url=product.full_url,
         tax_rate=settings.tax_rate,
     )

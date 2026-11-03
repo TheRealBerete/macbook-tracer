@@ -13,5 +13,8 @@ python-dotenv==1.1.1
 # Ordonnanceur (Sprint 4)
 APScheduler==3.11.0
 
+# Base des fuseaux horaires (mode Black Friday à l'heure de Toronto) — absente de python:slim
+tzdata==2025.2
+
 # --- Dev / tests ---
 pytest==8.4.2

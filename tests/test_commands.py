@@ -202,3 +202,50 @@ def test_run_loop_processes_then_stops(bot: CommandBot) -> None:
     bot.run()
     assert any("/add" in m for m in bot.tg.sent)
     assert bot._offset == 11
+
+
+# --- /deals, /history, /criteria -------------------------------------------------
+
+
+def _seed_store(bot: CommandBot, tmp_path):
+    from datetime import datetime, timedelta, timezone
+
+    from bot.state import StateStore
+
+    store = StateStore(tmp_path / "state.json")
+    now = datetime.now(tz=timezone.utc)
+    rows = [
+        ("A", "(Remis à neuf) MacBook Pro 14 (Apple M4 / 16GB RAM / 512GB SSD)", 1699.99, "découverte", now),
+        ("B", "MacBook Pro 14 (Apple M5 / 16GB RAM / 1TB SSD)", 2199.77, "découverte", now),
+        ("C", "MacBook Pro 14 (Apple M3 / 8GB RAM / 512GB SSD)", 999.0, "découverte", now),   # hors critères
+        ("D", "MacBook Pro 14 (Apple M4 / 16GB RAM / 512GB SSD)", 1500.0, "découverte",
+         now - timedelta(days=3)),                                                            # trop vieux
+    ]
+    for sku, name, price, source, seen in rows:
+        state = store.get(sku)
+        state.record_price(price + 300, None, now=seen - timedelta(hours=1))
+        state.record_price(price, None, now=seen)
+        state.describe(name=name, url=f"https://x/{sku}", condition="Neuf", source=source)
+    store.save()
+    bot.store_factory = lambda: StateStore(tmp_path / "state.json")
+
+
+def test_deals_sorted_and_filtered(bot: CommandBot, tmp_path) -> None:
+    _seed_store(bot, tmp_path)
+    reply = bot._dispatch("/deals")
+    assert reply.index("1,699.99") < reply.index("2,199.77")
+    assert "<code>C</code>" not in reply and "<code>D</code>" not in reply
+    assert "✅" in reply  # A sous le budget
+
+
+def test_history(bot: CommandBot, tmp_path) -> None:
+    _seed_store(bot, tmp_path)
+    reply = bot._dispatch("/history A")
+    assert "plus bas 1,699.99" in reply
+    assert "1,999.99" in reply
+    assert "Aucun historique" in bot._dispatch("/history ZZZ")
+
+
+def test_criteria(bot: CommandBot) -> None:
+    reply = bot._dispatch("/criteria")
+    assert "M4 → M6" in reply and "16 Go" in reply and "512 Go" in reply

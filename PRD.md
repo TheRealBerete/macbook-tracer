@@ -84,10 +84,10 @@ pour permettre un achat réactif, avec un budget cible de **2 000 $ CAD (hors ta
 |---|---------------|-------------|
 | F6 | Suivi multi-vendeurs | Amazon Canada, Staples, Costco. |
 | F7 | Historique des prix | Migration vers SQLite + génération de graphes de tendance. |
-| F8 | Détection d'erreur de prix | Baisse > 40 % vs régulier → alerte priorité maximale, message spécifique. |
+| ~~F8~~ | ~~Détection d'erreur de prix~~ | ✅ **Fait (Sprint 8)** : `PRICE_ERROR_PCT` (40 %) → alerte 🚨 envoyée en premier. |
 | ~~F9~~ | ~~Commandes Telegram~~ | ✅ **Fait (Sprint 7)** : `/help /list /add /remove /setprice /check /run /status` par long-polling `getUpdates` — pas de `python-telegram-bot`, pas de webhook. `bot/commands.py`. |
 | F12 | Vérification panier | Confirmer que le prix affiché = prix réel en simulant un "ajout au panier". |
-| F13 | Intervalle variable par plage de dates | Ex. 5 min pendant la semaine du Black Friday, 60 min le reste de l'année. |
+| ~~F13~~ | ~~Intervalle variable par plage de dates~~ | ✅ **Fait (Sprint 8)** : `RUSH_START`→`RUSH_END` (20 nov → 2 déc) à `RUSH_INTERVAL_MINUTES` (10 min). |
 
 ---
 
@@ -352,6 +352,7 @@ Dernière erreur : HTTP 403 sur /api/offers/v1/...
 | 5 | Déploiement Docker / Dokploy + healthcheck | ✅ `Dockerfile`, `docker-compose.yml`, `docs/deploy.md` ; déploiement à faire par l'utilisateur dans Dokploy |
 | 6 | Module de découverte Open Box (F10) | ✅ fait |
 | 7 | Commandes Telegram (F9) — long-polling `getUpdates` | ✅ fait |
+| 8 | Black Friday : critères M4–M6 / ≥ 16 Go / ≥ 512 Go, reconditionné inclus, variantes des modèles suivis, stock, F8, F13, récap des pépites, historique, `/deals` `/history` `/criteria` | ✅ fait |
 
-Code : paquet `bot/`, 75 tests. CLI `python -m bot {check,run,watch,test-telegram,healthcheck}`.
+Code : paquet `bot/`, 107 tests. CLI `python -m bot {check,run,watch,test-telegram,healthcheck}`.
 En prod via Dokploy.

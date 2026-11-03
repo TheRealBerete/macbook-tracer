@@ -13,6 +13,7 @@ Le client :
 from __future__ import annotations
 
 import logging
+import random
 import time
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
@@ -63,6 +64,7 @@ class BestBuyClient:
         timeout: float = 15.0,
         max_retries: int = 4,
         backoff_base: float = 2.0,
+        request_delay: tuple[float, float] = (0.0, 0.0),
         client: httpx.Client | None = None,
     ) -> None:
         self.lang = lang
@@ -70,6 +72,9 @@ class BestBuyClient:
         self.postal_code = postal_code
         self.max_retries = max_retries
         self.backoff_base = backoff_base
+        # Pause aléatoire (s) entre deux requêtes : rythme « humain » pour Akamai.
+        self.request_delay = request_delay
+        self._calls = 0
 
         headers = {
             "User-Agent": user_agent,
@@ -99,6 +104,10 @@ class BestBuyClient:
 
     def _get_json(self, path: str, params: dict[str, str] | None = None) -> object:
         last_error: Exception | None = None
+        low, high = self.request_delay
+        if self._calls and high > 0:
+            time.sleep(random.uniform(low, max(low, high)))
+        self._calls += 1
 
         for attempt in range(1, self.max_retries + 1):
             try:

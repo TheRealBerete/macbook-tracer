@@ -19,13 +19,15 @@ Commandes :
 
 from __future__ import annotations
 
+import html
 import logging
 import threading
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from bot.bestbuy import BestBuyApiError, BestBuyClient
-from bot.config import Settings, Target, load_targets, save_targets
+from bot.config import STORE_TZ, Settings, Target, load_targets, save_targets
+from bot.state import StateStore
 from bot.telegram import TelegramError, TelegramNotifier
 
 logger = logging.getLogger(__name__)
@@ -37,6 +39,9 @@ COMMAND_MENU: list[tuple[str, str]] = [
     ("remove", "Retirer : /remove <web_code>"),
     ("setprice", "Changer un seuil : /setprice <web_code> <prix>"),
     ("check", "Prix actuel : /check <web_code>"),
+    ("deals", "Meilleures offres vues (24 h)"),
+    ("history", "Historique de prix : /history <web_code>"),
+    ("criteria", "Critères de recherche actuels"),
     ("run", "Forcer un cycle maintenant"),
     ("status", "État du bot"),
 ]
@@ -56,7 +61,9 @@ class CommandBot:
         trigger_cycle: Callable[[], None],
         heartbeat_path,
         poll_timeout: int = 15,
+        store_factory: Callable[[], StateStore] = StateStore,
     ) -> None:
+        self.store_factory = store_factory
         self.settings = settings
         self.tg = notifier
         self.authorized_chat_id = str(settings.telegram_chat_id)
@@ -270,11 +277,20 @@ def _cmd_run(bot: CommandBot, args: list[str]) -> str:
 
 def _cmd_status(bot: CommandBot, args: list[str]) -> str:
     targets = load_targets()
+    st = bot.settings
+    rush = st.in_rush()
+    mode = (
+        f"🛍️ Black Friday — toutes les {st.effective_interval()} min (jusqu'au {st.rush_end})"
+        if rush
+        else f"normal — toutes les {st.effective_interval()} min"
+        + (f" (Black Friday dès le {st.rush_start})" if st.rush_enabled else "")
+    )
     lines = [
         "<b>État du bot</b>",
         f"• Watchlist : {len(targets)} produit(s)",
-        f"• Intervalle : {bot.settings.interval_minutes} min",
-        f"• Découverte : {'activée' if bot.settings.discovery_enabled else 'désactivée'}",
+        f"• Rythme : {mode}",
+        f"• Découverte : {'activée' if st.discovery_enabled else 'désactivée'}",
+        f"• Produits suivis en mémoire : {len(bot.store_factory().all())}",
     ]
     if bot.heartbeat_path.exists():
         age_min = (
@@ -285,6 +301,90 @@ def _cmd_status(bot: CommandBot, args: list[str]) -> str:
     else:
         lines.append("• Dernier cycle : aucun encore")
     return "\n".join(lines)
+
+
+def _cmd_deals(bot: CommandBot, args: list[str]) -> str:
+    """Les offres les moins chères vues ces dernières 24 h, tous canaux confondus."""
+    limit = 10
+    if args:
+        try:
+            limit = max(1, min(25, int(args[0])))
+        except ValueError:
+            raise CommandError("Usage : /deals [nombre]") from None
+    cutoff = datetime.now(tz=timezone.utc) - timedelta(hours=24)
+    store = bot.store_factory()
+    rows = [
+        (sku, state)
+        for sku, state in store.all().items()
+        if state.current_price is not None
+        and state.last_seen_at is not None
+        and state.last_seen_at >= cutoff
+        and state.name
+        and _matches_criteria(state, bot.settings)
+    ]
+    if not rows:
+        return "Aucune offre correspondant aux critères vue ces dernières 24 h."
+    rows.sort(key=lambda row: row[1].current_price)
+    budget = bot.settings.budget
+    lines = [f"<b>🏆 Top {min(limit, len(rows))} — vus ces dernières 24 h</b>"]
+    for sku, state in rows[:limit]:
+        mark = "✅" if state.current_price <= budget else "▫️"
+        name = html.escape(state.name[:70])
+        link = f'<a href="{html.escape(state.url)}">{name}</a>' if state.url else name
+        extra = " · ".join(x for x in (state.condition, state.specs) if x)
+        low = (
+            f" (plus bas {state.lowest_ever:.0f} $)"
+            if state.lowest_ever is not None and state.lowest_ever < state.current_price
+            else ""
+        )
+        lines.append(
+            f"{mark} <b>{state.current_price:,.2f} $</b>{low}\n   {link}\n"
+            f"   <i>{html.escape(extra)}</i> · <code>{sku}</code>"
+        )
+    return "\n".join(lines)
+
+
+def _matches_criteria(state, settings: Settings) -> bool:
+    from bot.criteria import check_specs
+
+    if state.source == "watchlist":
+        return True
+    return check_specs(state.name or "", settings).ok
+
+
+def _cmd_history(bot: CommandBot, args: list[str]) -> str:
+    if not args:
+        raise CommandError("Usage : /history &lt;web_code&gt;")
+    sku = args[0]
+    state = bot.store_factory().all().get(sku)
+    if state is None or not state.history:
+        raise CommandError(f"Aucun historique pour {sku} (pas encore vu par le bot).")
+    prices = [price for _, price in state.history]
+    lines = [
+        f"<b>📈 {html.escape((state.name or sku)[:90])}</b>",
+        f"Actuel {state.current_price:,.2f} $ · plus bas {min(prices):,.2f} $ · plus haut {max(prices):,.2f} $",
+        "",
+    ]
+    for when, price in state.history[-12:]:
+        local = when.astimezone(STORE_TZ)
+        lines.append(f"<code>{local:%d/%m %H:%M}</code>  {price:,.2f} $")
+    if len(state.history) > 12:
+        lines.append(f"<i>… {len(state.history) - 12} changement(s) plus ancien(s)</i>")
+    return "\n".join(lines)
+
+
+def _cmd_criteria(bot: CommandBot, args: list[str]) -> str:
+    st = bot.settings
+    refurb = "neuf, boîte ouverte et remis à neuf" if st.discovery_include_refurbished else "neuf et boîte ouverte"
+    return "\n".join([
+        "<b>🎯 Critères de la découverte</b>",
+        f"• Puce : M{st.discovery_min_chip} → M{st.discovery_max_chip}",
+        f"• RAM ≥ {st.min_ram_gb} Go · stockage ≥ {st.min_storage_gb} Go",
+        f"• Budget : {st.budget:,.0f} $ HT (tout ce qui est en dessous est signalé)",
+        f"• Fourchette : {st.discovery_min_price:,.0f} → {st.discovery_max_price:,.0f} $",
+        f"• États : {refurb}",
+        f"• Erreur de prix si baisse ≥ {st.price_error_pct:g} %",
+    ])
 
 
 def _parse_price(raw: str) -> float:
@@ -305,6 +405,9 @@ _HANDLERS: dict[str, Callable[[CommandBot, list[str]], str]] = {
     "remove": _cmd_remove,
     "setprice": _cmd_setprice,
     "check": _cmd_check,
+    "deals": _cmd_deals,
+    "history": _cmd_history,
+    "criteria": _cmd_criteria,
     "run": _cmd_run,
     "status": _cmd_status,
 }

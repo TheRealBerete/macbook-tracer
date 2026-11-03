@@ -14,12 +14,15 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from pydantic import BaseModel, Field
 
 from bot.config import DEFAULT_STATE_PATH
+
+
+HISTORY_MAX = 200
 
 
 def utcnow() -> datetime:
@@ -41,13 +44,36 @@ class ProductState(BaseModel):
     # Vu disponible au dernier passage ? (pour l'alerte "de retour en stock")
     was_available: bool | None = None
 
+    # Infos d'affichage (pour /deals et /history), mises à jour à chaque passage.
+    name: str | None = None
+    url: str | None = None
+    condition: str | None = None
+    specs: str | None = None
+    source: str | None = None          # "watchlist" / "variante" / "découverte"
+
+    # Historique compact : [[iso_datetime, prix], ...] — une entrée par CHANGEMENT de prix.
+    history: list[tuple[datetime, float]] = Field(default_factory=list)
+
     def record_price(self, price: float, regular: float | None, *, now: datetime | None = None) -> None:
         now = now or utcnow()
+        if not self.history or abs(self.history[-1][1] - price) >= 0.01:
+            self.history.append((now, price))
+            del self.history[:-HISTORY_MAX]
         self.current_price = price
         self.regular_price = regular
         self.last_seen_at = now
         if self.lowest_ever is None or price < self.lowest_ever:
             self.lowest_ever = price
+
+    def describe(self, *, name: str, url: str | None, condition: str | None = None,
+                 specs: str | None = None, source: str | None = None) -> None:
+        self.name = name[:160]
+        self.url = url
+        self.condition = condition
+        if specs:
+            self.specs = specs
+        if source:
+            self.source = source
 
     def record_alert(self, price: float, *, now: datetime | None = None) -> None:
         self.last_alerted_price = price
@@ -85,6 +111,17 @@ class StateStore:
 
     def all(self) -> dict[str, ProductState]:
         return self._states
+
+    def prune(self, keep: set[str], *, max_age_days: int = 45, now: datetime | None = None) -> int:
+        """Oublie les annonces non revues depuis `max_age_days` (hors watchlist `keep`)."""
+        cutoff = (now or utcnow()) - timedelta(days=max_age_days)
+        stale = [
+            sku for sku, st in self._states.items()
+            if sku not in keep and st.last_seen_at is not None and st.last_seen_at < cutoff
+        ]
+        for sku in stale:
+            del self._states[sku]
+        return len(stale)
 
     def save(self) -> None:
         payload = {

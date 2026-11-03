@@ -11,6 +11,7 @@ Voir `docs/bestbuy-api.md` pour les endpoints et exemples de réponses.
 from __future__ import annotations
 
 import html
+import re
 from datetime import datetime, timezone
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -19,6 +20,83 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 def clean_text(value: str) -> str:
     """Décode les entités HTML (`&nbsp;`, `&amp;`...) et normalise les espaces insécables."""
     return html.unescape(value).replace("\xa0", " ").strip()
+
+
+# Ordre important : "très bon" avant "bon", "very good" avant "good".
+_GRADES: tuple[tuple[str, str], ...] = (
+    ("très bon état", "Très bon état"),
+    ("tres bon etat", "Très bon état"),
+    ("very good", "Très bon état"),
+    ("comme neuf", "Excellent"),
+    ("like new", "Excellent"),
+    ("excellent", "Excellent"),
+    ("bon état", "Bon état"),
+    ("good", "Bon état"),
+    ("passable", "Passable"),
+    ("fair", "Passable"),
+)
+
+# Rang (plus haut = meilleur état) — utile pour filtrer « au moins Bon état ».
+GRADE_RANK = {"Passable": 1, "Bon état": 2, "Très bon état": 3, "Excellent": 4}
+
+_CHIP = re.compile(r"\bM([1-9])(?:\s+(Pro|Max|Ultra))?\b")
+
+
+_SIZE = re.compile(r"(\d+(?:[.,]\d+)?)\s*(GB|Go|TB|To)\b", re.IGNORECASE)
+_RAM_WORDS = ("ram", "de ram", "mémoire", "de mémoire", "memory", "unified", "unifiée")
+_STORAGE_WORDS = ("ssd", "de ssd", "stockage", "de stockage", "storage", "disque")
+_RAM_SIZES = {8, 16, 18, 24, 32, 36, 48, 64, 96, 128}
+
+
+def specs_from_text(text: str) -> tuple[int | None, int | None]:
+    """(RAM en Go, stockage en Go) lus dans un libellé Best Buy, None si introuvable.
+
+    Gère « 16GB RAM / 512GB SSD », « RAM 16 Go/SSD 1 To », « 24Go/1To ».
+    Les mots voisins (RAM, SSD...) décident ; sinon : To ou ≥ 256 Go = stockage,
+    taille de RAM Apple connue = RAM.
+    """
+    ram: int | None = None
+    storage: int | None = None
+    for match in _SIZE.finditer(text):
+        value = float(match.group(1).replace(",", "."))
+        unit = match.group(2).lower()
+        gb = int(value * 1024) if unit in ("tb", "to") else int(value)
+        # Le mot-clé doit être collé au nombre (« 16GB RAM », « RAM 16 Go ») :
+        # sinon « 16GB RAM / 512GB SSD » attribuerait RAM au 512.
+        after = text[match.end(): match.end() + 14].lstrip(" -").lower()
+        before = text[max(0, match.start() - 12): match.start()].rstrip(" :").lower()
+
+        if after.startswith(_RAM_WORDS) or before.endswith(_RAM_WORDS):
+            kind = "ram"
+        elif after.startswith(_STORAGE_WORDS) or before.endswith(_STORAGE_WORDS):
+            kind = "storage"
+        elif unit in ("tb", "to") or gb >= 256:
+            kind = "storage"
+        elif gb in _RAM_SIZES:
+            kind = "ram"
+        else:
+            continue  # « 14 Go » = cœurs GPU mal libellés, etc.
+
+        if kind == "ram" and ram is None:
+            ram = gb
+        elif kind == "storage" and storage is None:
+            storage = gb
+    return ram, storage
+
+
+def grade_from_text(text: str) -> str | None:
+    lowered = text.lower()
+    for needle, label in _GRADES:
+        if needle in lowered:
+            return label
+    return None
+
+
+def chip_from_text(text: str) -> str | None:
+    match = _CHIP.search(text)
+    if match is None:
+        return None
+    return f"M{match.group(1)}" + (f" {match.group(2)}" if match.group(2) else "")
 
 BASE_URL = "https://www.bestbuy.ca"
 
@@ -116,6 +194,24 @@ class Product(_ApiModel):
         return "Neuf"
 
     @property
+    def condition_grade(self) -> str | None:
+        """Niveau d'état ("Excellent", "Très bon état", "Bon état", "Passable"), si présent."""
+        return grade_from_text(self.display_name)
+
+    @property
+    def condition_full(self) -> str:
+        """"Remis à neuf – Passable", "Boîte ouverte – Excellent", "Neuf"."""
+        grade = self.condition_grade
+        if self.condition_label == "Neuf" or grade is None:
+            return self.condition_label
+        return f"{self.condition_label} – {grade}"
+
+    @property
+    def chip(self) -> str | None:
+        """Puce Apple Silicon : "M4", "M4 Pro", "M5 Max"... (None si introuvable)."""
+        return chip_from_text(self.display_name)
+
+    @property
     def is_open_box(self) -> bool:
         return self.condition_label != "Neuf"
 
@@ -188,3 +284,28 @@ class ConditionProduct(_ApiModel):
         if self.product_url.startswith("http"):
             return self.product_url
         return BASE_URL + self.product_url
+
+    @property
+    def display_name(self) -> str:
+        return clean_text(self.title)
+
+    @property
+    def condition_full(self) -> str:
+        """"Boîte ouverte – Très bon état", "Remis à neuf – Excellent"..."""
+        base = clean_text(self.product_condition).split("(")[0].strip() or "Boîte ouverte"
+        grade = grade_from_text(self.product_condition) or grade_from_text(self.display_name)
+        return f"{base} – {grade}" if grade else base
+
+    @property
+    def has_real_discount(self) -> bool:
+        return self.regular_price > self.sale_price
+
+    @property
+    def discount_amount(self) -> float:
+        return round(max(self.regular_price - self.sale_price, 0.0), 2)
+
+    @property
+    def discount_pct(self) -> float:
+        if not self.has_real_discount or self.regular_price <= 0:
+            return 0.0
+        return round((self.regular_price - self.sale_price) / self.regular_price * 100, 1)

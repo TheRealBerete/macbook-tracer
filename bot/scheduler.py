@@ -17,6 +17,7 @@ from __future__ import annotations
 import logging
 import signal
 import threading
+import time
 from datetime import datetime, timezone
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -34,15 +35,70 @@ HEARTBEAT_PATH = DATA_DIR / "last_run.txt"
 # Sérialise cycle planifié / cycle manuel / édition de la watchlist.
 _cycle_lock = threading.Lock()
 
+# Début du dernier cycle (monotonic) et mode Black Friday au dernier tick.
+_last_cycle_at: float | None = None
+_last_rush: bool | None = None
+
+
+def tick_interval(settings: Settings) -> int:
+    """Fréquence du « tick » de l'ordonnanceur : la plus courte des deux périodes."""
+    base = max(1, settings.interval_minutes)
+    if settings.rush_enabled:
+        return max(1, min(base, settings.rush_interval_minutes))
+    return base
+
+
+def tick(settings: Settings, now: datetime | None = None) -> bool:
+    """Appelé à chaque tick : lance un cycle s'il est dû. Retourne True si lancé.
+
+    Hors Black Friday on ne cycle que toutes les `INTERVAL_MINUTES` ; pendant la
+    plage `RUSH_START`→`RUSH_END`, toutes les `RUSH_INTERVAL_MINUTES`.
+    """
+    global _last_cycle_at, _last_rush
+    now = now or datetime.now(tz=timezone.utc)
+    rush = settings.in_rush(now)
+    if _last_rush is not None and rush != _last_rush:
+        _announce_rush(settings, rush)
+    _last_rush = rush
+
+    due_after = settings.effective_interval(now) * 60 - 30  # 30 s de marge (dérive du tick)
+    if _last_cycle_at is not None and time.monotonic() - _last_cycle_at < due_after:
+        return False
+    run_cycle(settings)
+    return True
+
+
+def _announce_rush(settings: Settings, rush: bool) -> None:
+    if not settings.telegram_ready:
+        return
+    from bot.telegram import TelegramError, TelegramNotifier
+
+    text = (
+        f"🛍️ <b>Mode Black Friday activé</b> : un cycle toutes les "
+        f"{settings.rush_interval_minutes} min jusqu'au {settings.rush_end}."
+        if rush
+        else f"😴 Fin du mode Black Friday : retour à un cycle toutes les "
+        f"{settings.interval_minutes} min."
+    )
+    try:
+        with TelegramNotifier(settings.telegram_bot_token, settings.telegram_chat_id) as tg:
+            tg.send_message(text)
+    except TelegramError as exc:
+        logger.warning("Annonce du mode Black Friday : %s", exc)
+
 
 def run_cycle(settings: Settings) -> None:
     """Un cycle complet. Ne lève jamais : tout est attrapé et loggé."""
+    global _last_cycle_at
     with _cycle_lock:
+        _last_cycle_at = time.monotonic()
         try:
             targets = load_targets()
             store = StateStore()
             with BestBuyClient(
-                postal_code=settings.postal_code, user_agent=settings.user_agent
+                postal_code=settings.postal_code,
+                user_agent=settings.user_agent,
+                request_delay=(settings.request_delay_min, settings.request_delay_max),
             ) as client:
                 alerts = full_cycle(client, targets, store, settings)
 
@@ -67,11 +123,11 @@ def _write_heartbeat() -> None:
 
 def watch(settings: Settings | None = None) -> None:
     settings = settings or Settings()
-    interval = max(5, settings.interval_minutes)
+    interval = tick_interval(settings)
 
     scheduler = BackgroundScheduler(timezone="UTC")
     scheduler.add_job(
-        run_cycle,
+        tick,
         trigger="interval",
         minutes=interval,
         args=[settings],
@@ -108,7 +164,12 @@ def watch(settings: Settings | None = None) -> None:
     signal.signal(signal.SIGINT, _stop)
 
     scheduler.start()
-    logger.info("Démarrage : cycle immédiat puis toutes les %d min.", interval)
+    logger.info(
+        "Démarrage : cycle immédiat, puis toutes les %d min (%d min en mode Black Friday %s→%s%s).",
+        settings.interval_minutes, settings.rush_interval_minutes,
+        settings.rush_start, settings.rush_end,
+        ", ACTIF" if settings.in_rush() else "",
+    )
 
     try:
         if command_bot is not None:

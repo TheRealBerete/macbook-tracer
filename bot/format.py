@@ -15,6 +15,7 @@ _LEVEL_HEADER = {
     AlertLevel.GREEN: "🟢 <b>BAISSE DE PRIX</b>",
     AlertLevel.YELLOW: "🟡 <b>BAISSE IMPORTANTE</b>",
     AlertLevel.RED: "🔴 <b>ALERTE PRIX</b>",
+    AlertLevel.CRITICAL: "🚨🚨 <b>ERREUR DE PRIX PROBABLE — FONCE</b> 🚨🚨",
 }
 
 
@@ -38,10 +39,16 @@ def format_alert(alert: Alert) -> str:
 
 def _format_price(alert: Alert) -> str:
     header = _LEVEL_HEADER.get(alert.level or AlertLevel.RED, "🔔 <b>ALERTE</b>")
-    if alert.kind is AlertKind.DISCOVERY:
-        header = "💎 <b>PÉPITE DÉTECTÉE</b>"
+    if alert.kind is AlertKind.DISCOVERY and alert.level is not AlertLevel.CRITICAL:
+        badge = "🔴" if alert.level is AlertLevel.RED else "🟡"
+        header = f"{badge}💎 <b>PÉPITE DÉTECTÉE</b>"
 
     lines = [header, "", f"📦 {_esc(alert.name)}"]
+    if alert.extra.get("variant_of"):
+        lines.append(f"🔁 Autre état de : <i>{_esc(alert.extra['variant_of'])}</i>")
+    if alert.specs:
+        warn = "  ⚠️ <i>specs à vérifier</i>" if alert.specs_unverified else ""
+        lines.append(f"⚙️ {_esc(alert.specs)}{warn}")
 
     if alert.price is not None:
         price_line = f"💰 <b>{_money(alert.price)}</b> HT"
@@ -65,6 +72,10 @@ def _format_price(alert: Alert) -> str:
         lines.append(f"🏪 Vendeur : {_esc(alert.seller)}")
     if alert.stock:
         lines.append(f"📦 Stock : {_esc(alert.stock)}")
+    if alert.budget and alert.price is not None:
+        gap = alert.price - alert.budget
+        verdict = "✅ DANS LE BUDGET" if gap <= 0 else f"❌ +{_money(gap)} au-dessus"
+        lines.append(f"🎯 Budget {_money(alert.budget)} HT → {verdict}")
 
     if alert.url:
         lines.append("")
@@ -90,4 +101,16 @@ def _format_back_in_stock(alert: Alert) -> str:
     if alert.url:
         lines.append("")
         lines.append(f'🔗 <a href="{_esc(alert.url)}">Voir sur Best Buy</a>')
+    return "\n".join(lines)
+
+
+def format_digest(alerts: list[Alert], *, title: str = "💎 <b>AUTRES PÉPITES</b>") -> str:
+    """Un seul message récapitulatif (quand une vague de pépites arrive d'un coup)."""
+    lines = [f"{title} ({len(alerts)})", ""]
+    for alert in alerts:
+        price = _money(alert.price) if alert.price is not None else "?"
+        cond = f" · {_esc(alert.condition)}" if alert.condition else ""
+        specs = f" · {_esc(alert.specs)}" if alert.specs else ""
+        link = f'<a href="{_esc(alert.url)}">{_esc(alert.name[:70])}</a>' if alert.url else _esc(alert.name[:70])
+        lines.append(f"• <b>{price}</b>{cond}{specs}\n  {link}")
     return "\n".join(lines)

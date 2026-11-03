@@ -71,7 +71,7 @@ def test_openbox_alert_on_new_low_only() -> None:
     state = ProductState(lowest_ever=2200)
     alert = evaluate_target(tgt, product, state, SETTINGS)
     assert alert is not None                   # 2187 < 2200 -> nouveau plancher
-    assert alert.condition == "Boîte ouverte"
+    assert alert.condition == "Boîte ouverte – Très bon état"
 
     # deuxième passage même prix : plus de nouveau plancher -> pas d'alerte
     state2 = ProductState(lowest_ever=2187)

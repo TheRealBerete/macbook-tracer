@@ -13,7 +13,9 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -27,6 +29,9 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", PROJECT_ROOT))
 
 DEFAULT_TARGETS_PATH = DATA_DIR / "targets.json"
 DEFAULT_STATE_PATH = DATA_DIR / "state.json"
+
+# Les promos Best Buy CA basculent à l'heure de l'Est.
+STORE_TZ = ZoneInfo("America/Toronto")
 
 
 class Settings(BaseSettings):
@@ -60,17 +65,72 @@ class Settings(BaseSettings):
     failure_threshold: int = 3         # échecs API consécutifs avant alerte de panne
     default_min_discount_pct: float = 15.0
 
+    # Budget cible (HT) : sert au badge 🔴 et à la ligne « 🎯 Budget » des alertes.
+    budget: float = 2000.0
+    # Baisse ≥ ce % vs prix régulier = erreur de prix probable -> alerte 🚨 prioritaire.
+    price_error_pct: float = 40.0
+    # Surveille le stock de chaque produit de la watchlist (alerte 🔵 retour en stock).
+    stock_check_enabled: bool = True
+
     # --- Découverte (Sprint 6) ---
     discovery_enabled: bool = True
     discovery_max_price: float = 2000.0
-    discovery_min_price: float = 1200.0        # sous ce prix = vieux matériel, on ignore
+    discovery_min_price: float = 900.0         # sous ce prix = accessoire / annonce douteuse
+    # Au-dessus du budget (et ≤ max_price), il faut au moins ce rabais pour alerter.
+    # Sous le budget : tout produit qui passe les filtres de specs est signalé.
     discovery_min_discount_pct: float = 15.0
-    discovery_apple_silicon_only: bool = True  # M1/M2/M3/M4 seulement (pas d'Intel)
-    discovery_include_refurbished: bool = False  # PRD V1 : reconditionné hors scope
+    discovery_apple_silicon_only: bool = True  # puce M1…M9 (pas d'Intel)
+    discovery_include_refurbished: bool = True  # remis à neuf inclus (souvent les meilleurs prix)
+    # Génération de puce acceptée : M4 → M6 par défaut.
+    discovery_min_chip: int = 4
+    discovery_max_chip: int = 6
+    # Specs minimales (lues dans le nom du produit). 0 = pas de filtre.
+    min_ram_gb: int = 16
+    min_storage_gb: int = 512
+    # Specs illisibles dans le nom : True = on signale quand même (marqué « à vérifier »).
+    allow_unknown_specs: bool = True
+    # Requêtes de recherche, séparées par des virgules.
+    discovery_queries: str = "macbook pro"
+    discovery_max_pages: int = 15              # 24 résultats/page
+    # Au-delà de N pépites dans un même cycle : les N meilleures en détail + 1 récap.
+    discovery_max_alerts_per_cycle: int = 5
+
+    # --- Mode Black Friday (F13) : cycles plus rapprochés sur une plage de dates ---
+    rush_enabled: bool = True
+    rush_start: str = "11-20"                  # MM-JJ, inclus (heure de Toronto)
+    rush_end: str = "12-02"                    # MM-JJ, inclus
+    rush_interval_minutes: int = 10
 
     @property
     def telegram_ready(self) -> bool:
         return bool(self.telegram_bot_token and self.telegram_chat_id)
+
+    @property
+    def queries(self) -> list[str]:
+        return [q.strip() for q in self.discovery_queries.split(",") if q.strip()]
+
+    def in_rush(self, now: datetime | None = None) -> bool:
+        """True si `now` tombe dans la plage Black Friday (bornes incluses)."""
+        if not self.rush_enabled:
+            return False
+        local = (now or datetime.now(tz=timezone.utc)).astimezone(STORE_TZ)
+        today = (local.month, local.day)
+        start = _parse_month_day(self.rush_start)
+        end = _parse_month_day(self.rush_end)
+        if start <= end:
+            return start <= today <= end
+        return today >= start or today <= end   # plage à cheval sur le 1er janvier
+
+    def effective_interval(self, now: datetime | None = None) -> int:
+        """Intervalle (min) à appliquer maintenant : rapide en période Black Friday."""
+        if self.in_rush(now):
+            return max(1, min(self.rush_interval_minutes, self.interval_minutes))
+        return max(1, self.interval_minutes)
+
+
+def _parse_month_day(raw: str) -> tuple[int, int]:
+    month, day = raw.strip().split("-")
+    return int(month), int(day)
 
 
 class Target(BaseModel):

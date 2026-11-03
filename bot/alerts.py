@@ -20,9 +20,14 @@ class AlertLevel(str, Enum):
     GREEN = "green"    # baisse modérée
     YELLOW = "yellow"  # baisse importante
     RED = "red"        # baisse critique OU sous le budget cible
+    CRITICAL = "critical"  # erreur de prix probable (F8) : agir tout de suite
 
 
-def level_for(discount_pct: float, *, under_budget: bool) -> AlertLevel:
+def level_for(
+    discount_pct: float, *, under_budget: bool, price_error_pct: float | None = None
+) -> AlertLevel:
+    if price_error_pct is not None and discount_pct >= price_error_pct:
+        return AlertLevel.CRITICAL
     if under_budget or discount_pct >= 25:
         return AlertLevel.RED
     if discount_pct >= 15:
@@ -47,6 +52,9 @@ class Alert:
     stock: str | None = None
     url: str | None = None
     tax_rate: float = 0.0
+    budget: float | None = None      # budget cible HT -> ligne « 🎯 Budget »
+    specs: str | None = None         # « M4 · 16 Go · 512 Go »
+    specs_unverified: bool = False   # RAM / stockage illisibles dans le nom
     extra: dict[str, str] = field(default_factory=dict)
 
     @property
